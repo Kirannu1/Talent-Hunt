@@ -88,28 +88,35 @@
             <label for="f-college">College / University Name *</label>
             <input id="f-college" list="college-list" type="text" placeholder="e.g. RV College of Engineering (RVCE)" autocomplete="off">
             <datalist id="college-list">
+              <option value="Easwari Engineering College">
+              <option value="SRM Ramapuram (SRM IST)">
+              <option value="St. Joseph's College of Engineering">
+              <option value="Sri Venkateswara College of Engineering (SVCE)">
+              <option value="Rajalakshmi Engineering College (REC)">
+              <option value="Vellore Institute of Technology (VIT)">
+              <option value="VIT Vellore">
+              <option value="Meenakshi Engineering College">
               <option value="RV College of Engineering (RVCE)">
               <option value="PES University, Bengaluru">
               <option value="BMS College of Engineering (BMSCE)">
-              <option value="IIT Bombay">
-              <option value="IIT Delhi">
               <option value="IIT Madras">
+              <option value="IIT Bombay">
               <option value="NIT Karnataka, Surathkal">
               <option value="BITS Pilani">
               <option value="Manipal Institute of Technology">
-              <option value="Vellore Institute of Technology (VIT)">
               <option value="Delhi Technological University (DTU)">
-              <option value="MS Ramaiah Institute of Technology">
-              <option value="Stanford University">
-              <option value="MIT (Massachusetts Institute of Technology)">
             </datalist>
             <div class="quick-chips">
+              <span class="quick-chip" data-college="Easwari Engineering College">+ Easwari</span>
+              <span class="quick-chip" data-college="SRM Ramapuram (SRM IST)">+ SRM Ramapuram</span>
+              <span class="quick-chip" data-college="St. Joseph's College of Engineering">+ St. Joseph's</span>
+              <span class="quick-chip" data-college="Sri Venkateswara College of Engineering (SVCE)">+ SVCE</span>
+              <span class="quick-chip" data-college="Rajalakshmi Engineering College (REC)">+ REC</span>
+              <span class="quick-chip" data-college="Vellore Institute of Technology (VIT)">+ VIT</span>
+              <span class="quick-chip" data-college="VIT Vellore">+ VIT Vellore</span>
+              <span class="quick-chip" data-college="Meenakshi Engineering College">+ Meenakshi</span>
               <span class="quick-chip" data-college="RV College of Engineering (RVCE)">+ RVCE</span>
-              <span class="quick-chip" data-college="PES University, Bengaluru">+ PES Univ</span>
-              <span class="quick-chip" data-college="BMS College of Engineering (BMSCE)">+ BMSCE</span>
-              <span class="quick-chip" data-college="IIT Bombay">+ IIT Bombay</span>
-              <span class="quick-chip" data-college="NIT Karnataka, Surathkal">+ NITK</span>
-              <span class="quick-chip" data-college="BITS Pilani">+ BITS Pilani</span>
+              <span class="quick-chip" data-college="PES University, Bengaluru">+ PES</span>
             </div>
           </div>
 
@@ -700,13 +707,13 @@ import { isCloudReady, getMyUid, saveProfileCloud, loadAllProfilesCloud, addTeam
     if (window.MindMeshSFX) window.MindMeshSFX.playClick();
   });
 
-  // ---------- 3D Holographic Card Mouse Tilt ----------
+  // ---------- 3D Holographic Card Mouse & Touch Tilt ----------
   const card = document.getElementById('campus-id-card');
   if (card) {
-    card.addEventListener('mousemove', (e) => {
+    const handleTilt = (clientX, clientY) => {
       const rect = card.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
+      const x = clientX - rect.left;
+      const y = clientY - rect.top;
       const cx = rect.width / 2;
       const cy = rect.height / 2;
       const rotX = ((y - cy) / cy) * -9;
@@ -714,8 +721,15 @@ import { isCloudReady, getMyUid, saveProfileCloud, loadAllProfilesCloud, addTeam
       card.style.setProperty('--mouse-x', `${(x / rect.width) * 100}%`);
       card.style.setProperty('--mouse-y', `${(y / rect.height) * 100}%`);
       card.style.transform = `perspective(800px) rotateX(${rotX}deg) rotateY(${rotY}deg) scale3d(1.02, 1.02, 1.02)`;
-    });
+    };
+    card.addEventListener('mousemove', (e) => handleTilt(e.clientX, e.clientY));
+    card.addEventListener('touchmove', (e) => {
+      if (e.touches && e.touches.length) handleTilt(e.touches[0].clientX, e.touches[0].clientY);
+    }, { passive: true });
     card.addEventListener('mouseleave', () => {
+      card.style.transform = 'perspective(800px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
+    });
+    card.addEventListener('touchend', () => {
       card.style.transform = 'perspective(800px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
     });
   }

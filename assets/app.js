@@ -22,20 +22,23 @@ const MindMesh = (function () {
   ];
 
   const COLLEGES = [
+    'Easwari Engineering College',
+    'SRM Ramapuram (SRM IST)',
+    'St. Joseph\'s College of Engineering',
+    'Sri Venkateswara College of Engineering (SVCE)',
+    'Rajalakshmi Engineering College (REC)',
+    'Vellore Institute of Technology (VIT)',
+    'VIT Vellore',
+    'Meenakshi Engineering College',
     'RV College of Engineering (RVCE)',
     'PES University, Bengaluru',
     'BMS College of Engineering (BMSCE)',
-    'IIT Bombay',
-    'IIT Delhi',
     'IIT Madras',
+    'IIT Bombay',
     'NIT Karnataka, Surathkal',
     'BITS Pilani',
     'Manipal Institute of Technology',
-    'Vellore Institute of Technology (VIT)',
-    'Delhi Technological University (DTU)',
-    'MS Ramaiah Institute of Technology',
-    'Stanford University',
-    'MIT (Massachusetts Institute of Technology)'
+    'Delhi Technological University (DTU)'
   ];
 
   const CAMPUS_CLUBS = [
@@ -54,61 +57,61 @@ const MindMesh = (function () {
   const MOCK_STUDENTS = [
     {
       uid: 'mock_meera_sharma', name: 'Meera Sharma', year: '2nd year', branch: 'Design & Interaction',
-      college: 'RV College of Engineering (RVCE)', rollNo: '1RV23DS014', degree: 'B.Des in Interaction Design', semester: '4th Semester', cgpa: '9.1',
+      college: 'Easwari Engineering College', rollNo: '310623DS014', degree: 'B.Tech in Information Technology', semester: '4th Semester', cgpa: '9.1',
       clubs: ['Design & UI/UX Guild', 'ACM Student Chapter'],
       tech: ['Figma'], creative: ['UI/UX Design', 'Figma', 'Illustration'], interests: ['Product Design', 'AI & ML']
     },
     {
       uid: 'mock_kabir_anand', name: 'Kabir Anand', year: '4th year', branch: 'Computer Science',
-      college: 'RV College of Engineering (RVCE)', rollNo: '1RV21CS054', degree: 'B.Tech in Computer Science', semester: '8th Semester', cgpa: '8.85',
+      college: 'SRM Ramapuram (SRM IST)', rollNo: 'RA2111003020054', degree: 'B.Tech in Computer Science', semester: '8th Semester', cgpa: '8.85',
       clubs: ['Google Developer Student Club (GDSC)', 'AI & Data Science Society'],
       tech: ['Python', 'Machine Learning', 'SQL'], creative: [], interests: ['AI & ML', 'Data Science']
     },
     {
       uid: 'mock_wei_chen', name: 'Wei Chen', year: '3rd year', branch: 'Computer Science',
-      college: 'PES University, Bengaluru', rollNo: 'PES1UG22CS512', degree: 'B.Tech in Computer Science', semester: '6th Semester', cgpa: '9.3',
+      college: 'Rajalakshmi Engineering College (REC)', rollNo: '210701512', degree: 'B.E. in Computer Science', semester: '6th Semester', cgpa: '9.3',
       clubs: ['Open Source Software Guild', 'Competitive Programming Club'],
       tech: ['React', 'Node.js', 'JavaScript'], creative: [], interests: ['Web Development', 'Entrepreneurship']
     },
     {
-      uid: 'mock_ananya_iyer', name: 'Ananya Iyer', year: '1st year', branch: 'Media & Communications',
-      college: 'BMS College of Engineering (BMSCE)', rollNo: 'BMS24MC029', degree: 'B.A. in Media & Tech Comm', semester: '2nd Semester', cgpa: '8.7',
+      uid: 'mock_ananya_iyer', name: 'Ananya Iyer', year: '1st year', branch: 'Media & Tech Comm',
+      college: 'Sri Venkateswara College of Engineering (SVCE)', rollNo: '24IT029', degree: 'B.Tech in Information Technology', semester: '2nd Semester', cgpa: '8.7',
       clubs: ['E-Cell / Entrepreneurship Cell', 'Rotaract / Social Impact'],
       tech: [], creative: ['Public Speaking', 'Copywriting', 'Content Strategy'], interests: ['Entrepreneurship', 'EdTech']
     },
     {
       uid: 'mock_dev_patel', name: 'Dev Patel', year: '3rd year', branch: 'Electronics & Comm.',
-      college: 'NIT Karnataka, Surathkal', rollNo: '22EC114', degree: 'B.Tech in ECE', semester: '6th Semester', cgpa: '8.6',
+      college: 'St. Joseph\'s College of Engineering', rollNo: '312322EC114', degree: 'B.E. in ECE', semester: '6th Semester', cgpa: '8.6',
       clubs: ['Robotics & Automation Guild', 'IEEE Computer Society'],
       tech: ['Arduino / IoT', 'C++'], creative: [], interests: ['Robotics & IoT', 'Sustainability Tech']
     },
     {
       uid: 'mock_farah_idris', name: 'Farah Idris', year: '2nd year', branch: 'Computer Science',
-      college: 'IIT Bombay', rollNo: '23B030041', degree: 'B.Tech in Computer Science', semester: '4th Semester', cgpa: '9.4',
+      college: 'VIT Vellore', rollNo: '23BCE0041', degree: 'B.Tech in Computer Science', semester: '4th Semester', cgpa: '9.4',
       clubs: ['Competitive Programming Club', 'Open Source Software Guild'],
       tech: ['Python', 'Cybersecurity'], creative: [], interests: ['FinTech', 'AI & ML']
     },
     {
       uid: 'mock_rohan_verma', name: 'Rohan Verma', year: '4th year', branch: 'Digital Media & Game Design',
-      college: 'Manipal Institute of Technology', rollNo: '21MIT089', degree: 'B.Tech in Creative Media', semester: '7th Semester', cgpa: '8.4',
+      college: 'Meenakshi Engineering College', rollNo: '311521CS089', degree: 'B.E. in Computer Science', semester: '7th Semester', cgpa: '8.4',
       clubs: ['Design & UI/UX Guild'],
       tech: [], creative: ['3D Modeling', 'Animation', 'Video Editing'], interests: ['Game Development', 'Product Design']
     },
     {
-      uid: 'mock_priya_nair', name: 'Priya Nair', year: '2nd year', branch: 'Information Science',
-      college: 'MS Ramaiah Institute of Technology', rollNo: '1MS23IS077', degree: 'B.E. in Information Science', semester: '4th Semester', cgpa: '8.9',
+      uid: 'mock_priya_nair', name: 'Priya Nair', year: '2nd year', branch: 'Computer Science & AI',
+      college: 'Vellore Institute of Technology (VIT)', rollNo: '23BAI1077', degree: 'B.Tech in AI & ML', semester: '4th Semester', cgpa: '8.9',
       clubs: ['Google Developer Student Club (GDSC)'],
       tech: ['Java', 'Android'], creative: [], interests: ['Mobile Apps', 'HealthTech']
     },
     {
       uid: 'mock_leo_martins', name: 'Leo Martins', year: '3rd year', branch: 'Cloud & Systems',
-      college: 'BITS Pilani', rollNo: '2022A7PS0192P', degree: 'B.E. in Computer Science', semester: '6th Semester', cgpa: '8.75',
+      college: 'RV College of Engineering (RVCE)', rollNo: '1RV22CS092', degree: 'B.E. in Computer Science', semester: '6th Semester', cgpa: '8.75',
       clubs: ['Open Source Software Guild', 'ACM Student Chapter'],
       tech: ['Cloud / AWS', 'Node.js'], creative: [], interests: ['Web Development', 'FinTech']
     },
     {
-      uid: 'mock_tanvi_rao', name: 'Tanvi Rao', year: '1st year', branch: 'Visual Arts',
-      college: 'PES University, Bengaluru', rollNo: 'PES1UG24DS019', degree: 'B.Des in Product Design', semester: '2nd Semester', cgpa: '9.0',
+      uid: 'mock_tanvi_rao', name: 'Tanvi Rao', year: '1st year', branch: 'Design & Interaction',
+      college: 'Easwari Engineering College', rollNo: '310624IT019', degree: 'B.Tech in Information Technology', semester: '2nd Semester', cgpa: '9.0',
       clubs: ['Design & UI/UX Guild'],
       tech: [], creative: ['UI/UX Design', 'Photography'], interests: ['Product Design', 'Sustainability Tech']
     }

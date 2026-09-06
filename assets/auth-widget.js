@@ -147,8 +147,10 @@ import {
           toast('Google sign-in popup was closed.', 'info');
         } else if (res.error && res.error.code === 'auth/operation-not-allowed') {
           toast('Google sign-in provider must be enabled in Firebase Console.', 'error');
+        } else if (res.error && res.error.code === 'auth/unauthorized-domain') {
+          toast('Add "' + window.location.hostname + '" to Firebase Console -> Authentication -> Authorized Domains', 'error');
         } else {
-          toast('Google sign-in could not complete. Try on http://localhost:3000', 'error');
+          toast('Google sign-in error: ' + (res.error && res.error.message ? res.error.message : 'Please check Firebase setup'), 'error');
         }
       }
     });

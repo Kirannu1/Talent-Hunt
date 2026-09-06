@@ -69,4 +69,57 @@
     }, { threshold: 0.4 });
     counters.forEach(el => io2.observe(el));
   }
+
+  // ---- Mobile Navigation Drawer ----
+  const navRight = document.querySelector('.nav-right');
+  const navInner = document.querySelector('.nav-inner');
+  if (navRight && navInner) {
+    let toggleBtn = document.querySelector('.nav-toggle-btn');
+    if (!toggleBtn) {
+      toggleBtn = document.createElement('button');
+      toggleBtn.type = 'button';
+      toggleBtn.className = 'nav-toggle-btn';
+      toggleBtn.setAttribute('aria-label', 'Toggle Menu');
+      toggleBtn.innerHTML = '☰';
+      navRight.appendChild(toggleBtn);
+    }
+
+    let drawer = document.querySelector('.mobile-nav-drawer');
+    if (!drawer) {
+      drawer = document.createElement('div');
+      drawer.className = 'mobile-nav-drawer';
+      const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+      drawer.innerHTML = `
+        <a href="index.html#how" class="mobile-nav-link ${currentPage === 'index.html' ? 'active' : ''}">⚡ How it works</a>
+        <a href="index.html#synthesizer" class="mobile-nav-link">🤖 AI Team Studio</a>
+        <a href="ideas.html" class="mobile-nav-link ${currentPage === 'ideas.html' ? 'active' : ''}">💡 Campus Ideas</a>
+        <a href="dashboard.html" class="mobile-nav-link ${currentPage === 'dashboard.html' ? 'active' : ''}">📊 My Dashboard</a>
+        <a href="team.html" class="mobile-nav-link ${currentPage === 'team.html' ? 'active' : ''}">🤝 My Team & Squads</a>
+        <a href="inbox.html" class="mobile-nav-link ${currentPage === 'inbox.html' ? 'active' : ''}">💬 Direct Inbox</a>
+        <a href="profile.html" class="mobile-nav-cta">+ Build Campus Profile ✦</a>
+      `;
+      document.body.appendChild(drawer);
+    }
+
+    toggleBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const open = drawer.classList.toggle('open');
+      toggleBtn.innerHTML = open ? '✕' : '☰';
+      if (window.MindMeshSFX) window.MindMeshSFX.playClick();
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.mobile-nav-drawer') && !e.target.closest('.nav-toggle-btn')) {
+        drawer.classList.remove('open');
+        toggleBtn.innerHTML = '☰';
+      }
+    });
+
+    drawer.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        drawer.classList.remove('open');
+        toggleBtn.innerHTML = '☰';
+      });
+    });
+  }
 })();

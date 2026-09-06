@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Build your profile — MindMesh</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="nav">
+  <div class="nav-inner">
+    <a class="logo" href="index.html">
+      <svg class="logo-mark" viewBox="0 0 26 26" fill="none">
+        <circle cx="6" cy="7" r="3" fill="#6C4CE0"/>
+        <circle cx="20" cy="6" r="2.4" fill="#FF9F45"/>
+        <circle cx="19" cy="19" r="3.2" fill="#6C4CE0"/>
+        <circle cx="6" cy="19" r="2.2" fill="#FF9F45"/>
+        <path d="M6 7L20 6M6 7L19 19M20 6L19 19M6 7L6 19M6 19L19 19" stroke="#12161C" stroke-width="1" stroke-opacity="0.55"/>
+      </svg>
+      MindMesh
+    </a>
+    <nav class="nav-links">
+      <a href="index.html#how">How it works</a>
+      <a href="index.html#synthesizer">AI Studio</a>
+      <a href="ideas.html">Ideas</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="team.html">My Team</a>
+      <a href="inbox.html">Inbox <span class="inbox-badge" id="nav-inbox-badge" style="display:none;">1</span></a>
+    </nav>
+    <div class="nav-right">
+      <div id="auth-widget"></div>
+      <a class="nav-cta" href="dashboard.html">Dashboard</a>
+    </div>
+  </div>
+</header>
+
+<section class="page-hero">
+  <div class="wrap">
+    <span class="kicker mono">Build your profile</span>
+    <h1>Tell the mesh who you are.</h1>
+    <p>A few minutes of input. The AI reads your skills, finds your gaps, and starts matching you with people and opportunities as you go — watch it happen on the right.</p>
+  </div>
+</section>
+
+<div class="wrap">
+  <div id="cloud-banner" class="empty-note" style="display:none;margin-top:36px;"></div>
+
+  <!-- ============ WIZARD ============ -->
+  <div id="wizard-shell" class="wizard-shell">
+    <div>
+      <div class="progress-track" id="progress-track"></div>
+
+      <div class="wizard-card">
+
+        <!-- STEP 0 — IDENTITY & COLLEGE -->
+        <div class="wizard-step active" data-step="0">
+          <h2>Personal & Campus Identity</h2>
+          <p class="hint">Your official node identity across the collegiate intelligence mesh.</p>
+          
+          <div class="photo-upload">
+            <div class="photo-circle" id="photo-circle" title="Add a profile photo">
+              <span class="plus" id="photo-placeholder">+</span>
+              <img id="photo-img" style="display:none;" alt="Your profile photo">
+            </div>
+            <div>
+              <input type="file" id="photo-input" accept="image/*" style="display:none;">
+              <button type="button" class="btn-outline" id="photo-btn" style="padding:9px 16px;font-size:13px;">Upload Photo</button>
+              <div class="photo-hint">Displays on your Digital Student ID Badge and to matched teammates.</div>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="f-name">Full Name *</label>
+              <input id="f-name" type="text" placeholder="e.g. Aran Rao" autocomplete="off">
+            </div>
+            <div class="field">
+              <label for="f-roll">Campus Roll No / USN / Student ID *</label>
+              <input id="f-roll" type="text" placeholder="e.g. 1RV22CS042 or 2022BCS108" autocomplete="off" style="font-family:'JetBrains Mono',monospace;">
+            </div>
+          </div>
+
+          <div class="field" style="margin-bottom:16px;">
+            <label for="f-college">College / University Name *</label>
+            <input id="f-college" list="college-list" type="text" placeholder="e.g. RV College of Engineering (RVCE)" autocomplete="off">
+            <datalist id="college-list">
+              <option value="RV College of Engineering (RVCE)">
+              <option value="PES University, Bengaluru">
+              <option value="BMS College of Engineering (BMSCE)">
+              <option value="IIT Bombay">
+              <option value="IIT Delhi">
+              <option value="IIT Madras">
+              <option value="NIT Karnataka, Surathkal">
+              <option value="BITS Pilani">
+              <option value="Manipal Institute of Technology">
+              <option value="Vellore Institute of Technology (VIT)">
+              <option value="Delhi Technological University (DTU)">
+              <option value="MS Ramaiah Institute of Technology">
+              <option value="Stanford University">
+              <option value="MIT (Massachusetts Institute of Technology)">
+            </datalist>
+            <div class="quick-chips">
+              <span class="quick-chip" data-college="RV College of Engineering (RVCE)">+ RVCE</span>
+              <span class="quick-chip" data-college="PES University, Bengaluru">+ PES Univ</span>
+              <span class="quick-chip" data-college="BMS College of Engineering (BMSCE)">+ BMSCE</span>
+              <span class="quick-chip" data-college="IIT Bombay">+ IIT Bombay</span>
+              <span class="quick-chip" data-college="NIT Karnataka, Surathkal">+ NITK</span>
+              <span class="quick-chip" data-college="BITS Pilani">+ BITS Pilani</span>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="f-email">Campus / Student Email</label>
+              <input id="f-email" type="email" placeholder="e.g. aran.cs22@rvce.edu.in" autocomplete="off">
+              <div id="email-verified-tag" class="domain-badge" style="display:none;">
+                ✓ Verified Institutional Domain
+              </div>
+            </div>
+            <div class="field">
+              <label for="f-year">Academic Year *</label>
+              <select id="f-year">
+                <option value="">Select Year</option>
+                <option value="1st year">1st Year (Freshman)</option>
+                <option value="2nd year">2nd Year (Sophomore)</option>
+                <option value="3rd year" selected>3rd Year (Junior)</option>
+                <option value="4th year">4th Year (Senior)</option>
+                <option value="Postgrad">Postgraduate / Masters</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="photo-hint" id="google-hint" style="margin-top:14px;">
+            💡 Tip: Sign in with Google (top right) to automatically import your campus account and sync your profile across all devices.
+          </div>
+        </div>
+
+        <!-- STEP 1 — ACADEMICS & CAMPUS LIFE -->
+        <div class="wizard-step" data-step="1">
+          <h2>Degree & Campus Life</h2>
+          <p class="hint">What you study, your academic standing, and what campus clubs you belong to.</p>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="f-degree">Degree / Program</label>
+              <select id="f-degree">
+                <option value="B.Tech / B.E">B.Tech / B.E (Engineering)</option>
+                <option value="B.Des">B.Des (Design / Interaction)</option>
+                <option value="BCA / MCA">BCA / MCA (Computer Applications)</option>
+                <option value="B.Sc / BS">B.Sc / BS (Science & Computing)</option>
+                <option value="M.Tech / M.S">M.Tech / M.S</option>
+                <option value="Dual Degree">Dual Degree / Integrated</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="f-branch">Branch / Department Specialization *</label>
+              <input id="f-branch" type="text" placeholder="e.g. Computer Science & Engineering (AI/ML)" autocomplete="off">
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="f-semester">Current Semester</label>
+              <select id="f-semester">
+                <option value="1st Semester">1st Semester</option>
+                <option value="2nd Semester">2nd Semester</option>
+                <option value="3rd Semester">3rd Semester</option>
+                <option value="4th Semester">4th Semester</option>
+                <option value="5th Semester">5th Semester</option>
+                <option value="6th Semester" selected>6th Semester</option>
+                <option value="7th Semester">7th Semester</option>
+                <option value="8th Semester">8th Semester</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="f-cgpa">CGPA / Academic GPA</label>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <input id="f-cgpa" type="text" placeholder="e.g. 8.92" style="flex:1;" autocomplete="off">
+                <label style="font-size:12px;color:var(--ink-soft);display:flex;align-items:center;gap:5px;cursor:pointer;white-space:nowrap;">
+                  <input type="checkbox" id="f-show-cgpa" checked> Show on ID Card
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top:20px;margin-bottom:20px;">
+            <label style="font-size:13px;font-weight:600;color:var(--ink-soft);display:block;margin-bottom:8px;">
+              College Clubs, Student Chapters & Societies
+            </label>
+            <div class="chip-grid" id="chips-clubs"></div>
+            <div class="tag-input-row">
+              <input type="text" id="f-custom-club" placeholder="Add custom club (e.g. Web3 Guild, Debating Society)…">
+              <button type="button" id="btn-add-club">+ Add Club</button>
+            </div>
+          </div>
+
+          <div class="field" style="margin-bottom:16px;">
+            <label for="f-achievements">Campus Achievements & Hackathon Track Record</label>
+            <input id="f-achievements" type="text" placeholder="e.g. Smart India Hackathon Finalist · 2x Campus Hackathon Winner · Dean's List" autocomplete="off">
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="f-github">GitHub Profile Username / Link</label>
+              <input id="f-github" type="text" placeholder="e.g. github.com/aran-rao" autocomplete="off">
+            </div>
+            <div class="field">
+              <label for="f-linkedin">LinkedIn / Portfolio URL</label>
+              <input id="f-linkedin" type="text" placeholder="e.g. linkedin.com/in/aran-rao" autocomplete="off">
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 2 — SKILLS -->
+        <div class="wizard-step" data-step="2">
+          <h2>What can you build with?</h2>
+          <p class="hint">Pick technical & creative tools. Add any specialized frameworks or languages you use.</p>
+
+          <label style="font-size:13px;font-weight:600;color:var(--ink-soft);display:block;">Technical Skills</label>
+          <div class="chip-grid" id="chips-tech" style="margin-top:8px;"></div>
+
+          <label style="font-size:13px;font-weight:600;color:var(--ink-soft);display:block;margin-top:20px;">Creative & Communication Skills</label>
+          <div class="chip-grid" id="chips-creative" style="margin-top:8px;"></div>
+
+          <div class="tag-input-row" style="margin-top:16px;">
+            <input type="text" id="f-custom-skill" placeholder="Add custom skill or framework (e.g. FastAPI, PyTorch, Tailwind, Solidity)…">
+            <button type="button" id="btn-add-skill">+ Add Skill</button>
+          </div>
+
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:14px;flex-wrap:wrap;gap:10px;">
+            <span class="chip-count" id="skill-count">0 skills selected</span>
+            <span id="skill-diversity" style="font-size:12px;font-family:'JetBrains Mono',monospace;color:var(--violet);">Balanced Node Profile</span>
+          </div>
+        </div>
+
+        <!-- STEP 3 — INTERESTS & DOMAINS -->
+        <div class="wizard-step" data-step="3">
+          <h2>What domains pull you in?</h2>
+          <p class="hint">This is how MindMesh finds people who share your direction, even with complementary skills.</p>
+          <div class="chip-grid" id="chips-interests"></div>
+        </div>
+
+        <!-- STEP 4 — PROJECTS -->
+        <div class="wizard-step" data-step="4">
+          <h2>Anything you've already built?</h2>
+          <p class="hint">Projects are the strongest signal the AI has to calculate squad synergy. Add what you've worked on.</p>
+          <div id="project-list"></div>
+          <button type="button" class="add-project-btn" id="add-project">+ Add a project</button>
+        </div>
+
+        <!-- STEP 5 — LEARNING GOALS & TARGET ROLE -->
+        <div class="wizard-step" data-step="5">
+          <h2>What do you want to learn next?</h2>
+          <p class="hint">MindMesh uses this to pair you with campus peer mentors and rank competitions for you.</p>
+
+          <div class="field" style="margin-bottom:20px;">
+            <label for="f-target-role">Target Campus Role</label>
+            <select id="f-target-role">
+              <option value="Full-Stack AI Engineer">Full-Stack AI Engineer</option>
+              <option value="AI Product Designer">AI Product Designer</option>
+              <option value="Technical Campus Founder">Technical Campus Founder</option>
+              <option value="Data Scientist & ML Researcher">Data Scientist & ML Researcher</option>
+              <option value="Hardware & Embedded Systems Lead">Hardware & Embedded Systems Lead</option>
+            </select>
+          </div>
+
+          <label style="font-size:13px;font-weight:600;color:var(--ink-soft);display:block;margin-bottom:8px;">
+            Skills to close your gap:
+          </label>
+          <div class="chip-grid" id="chips-goals"></div>
+        </div>
+
+        <!-- STEP 6 — REVIEW & PASSPORT -->
+        <div class="wizard-step" data-step="6">
+          <h2>Ready to generate your campus mesh</h2>
+          <p class="hint">Review your verified student node credentials before activating on the campus network.</p>
+          
+          <div class="review-grid">
+            <div class="review-card">
+              <h5>Campus Identity</h5>
+              <div id="rv-basics" style="font-size:13.5px;color:var(--ink);line-height:1.5;"></div>
+            </div>
+            <div class="review-card">
+              <h5>Clubs & Track Record</h5>
+              <div id="rv-clubs" style="font-size:13.5px;color:var(--ink);line-height:1.5;"></div>
+            </div>
+            <div class="review-card">
+              <h5>Verified Skills</h5>
+              <div class="rv-tags" id="rv-skills"></div>
+            </div>
+            <div class="review-card">
+              <h5>Domains & Learning Goals</h5>
+              <div id="rv-goals" style="font-size:13px;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- NAV BUTTONS -->
+        <div class="wizard-nav">
+          <button type="button" class="wizard-btn back" id="btn-back">← Back</button>
+          <button type="button" class="wizard-btn next" id="btn-next">Continue →</button>
+          <button type="button" class="wizard-btn generate" id="btn-generate" style="display:none;">Generate my mesh ✦</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ LIVE SIDE PANEL: DIGITAL ID BADGE + LIVE MESH ============ -->
+    <aside class="mesh-panel">
+      <!-- Tier Progress Card -->
+      <div class="tier-progress-card">
+        <div class="tier-top">
+          <span style="font-size:11.5px;text-transform:uppercase;letter-spacing:0.04em;color:#9BA2AC;font-family:'JetBrains Mono',monospace;">Node Readiness</span>
+          <span class="tier-label" id="tier-label">🌱 Lvl 1: Campus Explorer</span>
+        </div>
+        <div class="completeness-track"><div class="completeness-fill" id="completeness-fill" style="width:25%;"></div></div>
+        <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:11px;color:#8F97A3;">
+          <span>Strength: <b id="completeness-pct" style="color:#fff;">25%</b></span>
+          <span id="completeness-hint">Add details to level up</span>
+        </div>
+        <div class="badges-unlock-row" id="badges-row">
+          <span class="unlock-badge" id="badge-campus">🎓 Campus ID</span>
+          <span class="unlock-badge" id="badge-skills">⚡ Polymath</span>
+          <span class="unlock-badge" id="badge-projects">🛠️ Builder</span>
+          <span class="unlock-badge" id="badge-team">🤝 Team Ready</span>
+        </div>
+      </div>
+
+      <!-- Tab bar to switch between Digital ID Card and Skill Mesh -->
+      <div class="panel-tab-bar">
+        <button type="button" class="panel-tab-btn active" id="tab-id-card">🪪 Digital Campus ID</button>
+        <button type="button" class="panel-tab-btn" id="tab-mesh-graph">🌐 Live Skill Mesh</button>
+      </div>
+
+      <!-- View 1: 3D Holographic Digital Student ID Card -->
+      <div id="view-id-card" class="campus-id-card-wrap">
+        <div class="campus-id-card" id="campus-id-card">
+          <div class="campus-id-shimmer"></div>
+          <div class="campus-id-top">
+            <div class="campus-college-brand">
+              <div class="campus-crest" id="card-crest">🎓</div>
+              <span id="card-college-name">RV College of Engineering</span>
+            </div>
+            <div class="verified-campus-badge">
+              <span class="verified-pulse"></span>
+              <span>Verified Node</span>
+            </div>
+          </div>
+          <div class="campus-id-middle">
+            <div class="campus-id-photo-frame">
+              <img id="card-photo-img" style="display:none;" alt="Student Photo">
+              <div class="fallback-initials" id="card-initials">YOU</div>
+            </div>
+            <div class="campus-id-person">
+              <div class="campus-id-name" id="card-name">Aran Rao</div>
+              <div class="campus-id-usn" id="card-usn">USN: 1RV22CS042</div>
+              <div class="campus-id-degree" id="card-degree">B.Tech · Computer Science</div>
+            </div>
+          </div>
+          <div class="campus-id-stats-row">
+            <div class="campus-stat-item">Academic Standing: <b id="card-standing">3rd Year · Sem 6</b></div>
+            <div class="campus-stat-item">Academic Score: <b id="card-cgpa">CGPA 8.92 ⭐</b></div>
+          </div>
+          <div class="campus-id-tags-row" id="card-tags-row">
+            <span class="campus-club-pill" id="card-club-preview">🏛️ GDSC Student Lead</span>
+            <span class="campus-skill-pill">Python</span>
+            <span class="campus-skill-pill">Machine Learning</span>
+            <span class="campus-skill-pill">Data Science</span>
+          </div>
+          <div class="campus-id-bottom">
+            <div class="campus-qr-box">
+              <svg class="mini-qr-svg" viewBox="0 0 24 24" fill="#000">
+                <path d="M2 2h7v7H2V2zm2 2v3h3V4H4zm11-2h7v7h-7V2zm2 2v3h3V4h-3zM2 15h7v7H2v-7zm2 2v3h3v-3H4zm9-2h2v2h-2v-2zm4 0h3v2h-3v-2zm-4 4h2v3h-2v-3zm3 0h4v1h-4v-1zm1 2h2v1h-2v-1zM5 5h1v1H5V5zm13 0h1v1h-1V5zM5 18h1v1H5v-1z"/>
+              </svg>
+              <span>SCAN TO VERIFY NODE</span>
+            </div>
+            <span id="card-hash" class="mono">MESH-ID: #CAMPUS-01</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- View 2: Live Skill Mesh Canvas -->
+      <div id="view-mesh-graph" style="display:none;">
+        <h4 style="font-family:'JetBrains Mono',monospace;font-size:12px;text-transform:uppercase;color:#9BA2AC;margin-bottom:4px;">
+          Your mesh — live
+        </h4>
+        <div class="mesh-sub" style="font-size:13px;color:#6C7480;margin-bottom:14px;">Builds itself as you pick skills and interests.</div>
+        <canvas id="live-mesh-canvas" style="width:100%;height:260px;border-radius:10px;background:rgba(255,255,255,0.02);"></canvas>
+        <div class="mesh-summary" id="mesh-summary" style="margin-top:14px;"></div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- ============ ANALYZING OVERLAY ============ -->
+  <div class="analyzing" id="analyzing">
+    <div class="ring"></div>
+    <div class="msg" id="analyzing-msg">Mapping your skills…</div>
+  </div>
+
+  <!-- ============ RESULTS (same page) ============ -->
+  <div class="results" id="results">
+    <div class="results-hero">
+      <div class="big-avatar" id="res-avatar">YOU</div>
+      <h2 id="res-heading">Your mesh is live.</h2>
+      <p id="res-sub">Here's who and what the AI found for you, based on what you just entered.</p>
+    </div>
+
+    <div class="results-section">
+      <h3><span class="n">1</span> Complementary teammates</h3>
+      <div class="match-cards" id="res-matches"></div>
+    </div>
+
+    <div class="results-section">
+      <h3><span class="n">2</span> Opportunities worth a look</h3>
+      <div class="results-opps" id="res-opps"></div>
+    </div>
+
+    <div class="results-cta">
+      <a class="btn-primary" href="dashboard.html">Open my full dashboard →</a>
+      <button type="button" class="btn-outline" id="btn-edit">Edit my profile</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-bottom">
+      <span>© 2026 MindMesh. Built by students, for students.</span>
+      <span class="mono">status: mesh online</span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/app.js"></script>
+<script src="assets/sfx.js"></script>
+<script src="assets/toast.js"></script>
+<script src="assets/copilot.js"></script>
+<script src="assets/mesh.js"></script>
+<script src="assets/polish.js"></script>
+<script type="module" src="assets/auth-widget.js"></script>
+<script type="module">
+import { isCloudReady, getMyUid, saveProfileCloud, loadAllProfilesCloud, addTeammate, whenAuthReady, onAuthChange } from './assets/cloud.js';
+
+(function(){
+  const STEP_LABELS = ['Identity', 'Academics', 'Skills', 'Interests', 'Projects', 'Goals', 'Review'];
+  let current = 0;
+  let projectCount = 0;
+
+  const state = {
+    name: '', rollNo: '', college: 'RV College of Engineering (RVCE)', email: '',
+    photo: null, year: '3rd year', semester: '6th Semester', degree: 'B.Tech / B.E',
+    branch: 'Computer Science', cgpa: '8.92', showCgpa: true,
+    clubs: new Set(['Google Developer Student Club (GDSC)', 'ACM Student Chapter']),
+    achievements: '', github: '', linkedin: '', targetRole: 'Full-Stack AI Engineer',
+    tech: new Set(['Python', 'Machine Learning', 'Data Science']),
+    creative: new Set(),
+    interests: new Set(['AI & ML', 'Data Science']),
+    learnGoals: new Set(['UI/UX Design', 'React']),
+    projects: []
+  };
+
+  // ---------- photo upload ----------
+  const photoCircle = document.getElementById('photo-circle');
+  const photoInput = document.getElementById('photo-input');
+  const photoImg = document.getElementById('photo-img');
+  const photoPlaceholder = document.getElementById('photo-placeholder');
+  const photoBtn = document.getElementById('photo-btn');
+
+  function openPhotoPicker(){ photoInput.click(); }
+  photoCircle.addEventListener('click', openPhotoPicker);
+  photoBtn.addEventListener('click', openPhotoPicker);
+
+  photoInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const img = new Image();
+      img.onload = () => {
+        const size = 240;
+        const side = Math.min(img.width, img.height);
+        const sx = (img.width - side) / 2, sy = (img.height - side) / 2;
+        const canvas = document.createElement('canvas');
+        canvas.width = size; canvas.height = size;
+        canvas.getContext('2d').drawImage(img, sx, sy, side, side, 0, 0, size, size);
+        state.photo = canvas.toDataURL('image/jpeg', 0.85);
+        photoImg.src = state.photo;
+        photoImg.style.display = 'block';
+        photoPlaceholder.style.display = 'none';
+        updateCardPreview();
+        updateLiveMesh();
+      };
+      img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+
+  // ---------- progress bar ----------
+  const track = document.getElementById('progress-track');
+  function renderProgress(){
+    track.innerHTML = '';
+    STEP_LABELS.forEach((label, i) => {
+      const stepEl = document.createElement('div');
+      stepEl.className = 'progress-step' + (i === current ? ' active' : '') + (i < current ? ' done' : '');
+      stepEl.innerHTML = `<span class="dot">${i < current ? '✓' : i + 1}</span><span class="lbl">${label}</span>`;
+      track.appendChild(stepEl);
+      if (i < STEP_LABELS.length - 1){
+        const line = document.createElement('div');
+        line.className = 'progress-line' + (i < current ? ' done' : '');
+        track.appendChild(line);
+      }
+    });
+  }
+
+  // ---------- chip rendering ----------
+  function renderChips(container, options, set, onToggle){
+    container.innerHTML = '';
+    options.forEach(opt => {
+      const chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = 'chip' + (set.has(opt) ? ' selected' : '');
+      chip.textContent = opt;
+      chip.addEventListener('click', () => {
+        if (set.has(opt)) set.delete(opt); else set.add(opt);
+        chip.classList.toggle('selected');
+        if (window.MindMeshSFX) window.MindMeshSFX.playClick();
+        onToggle && onToggle();
+        updateCardPreview();
+        updateLiveMesh();
+      });
+      container.appendChild(chip);
+    });
+  }
+
+  function renderClubChips(){
+    renderChips(document.getElementById('chips-clubs'), MindMesh.CAMPUS_CLUBS || [], state.clubs, updateCompleteness);
+  }
+
+  function renderSkillChips(){
+    renderChips(document.getElementById('chips-tech'), MindMesh.TECH_SKILLS, state.tech, updateSkillCount);
+    renderChips(document.getElementById('chips-creative'), MindMesh.CREATIVE_SKILLS, state.creative, updateSkillCount);
+    updateSkillCount();
+  }
+
+  function updateSkillCount(){
+    const n = state.tech.size + state.creative.size;
+    document.getElementById('skill-count').textContent = n + (n === 1 ? ' skill selected' : ' skills selected');
+    const diversityEl = document.getElementById('skill-diversity');
+    if (state.tech.size > 0 && state.creative.size > 0){
+      diversityEl.textContent = '⚡ High-Synergy Hybrid Node';
+      diversityEl.style.color = 'var(--violet)';
+    } else if (state.tech.size > 0){
+      diversityEl.textContent = '🛠️ Tech / Core Builder Node';
+      diversityEl.style.color = '#3FA772';
+    } else {
+      diversityEl.textContent = '🎨 Product & Design Node';
+      diversityEl.style.color = 'var(--amber)';
+    }
+    updateNextEnabled();
+  }
+
+  function renderInterestChips(){
+    renderChips(document.getElementById('chips-interests'), MindMesh.INTERESTS, state.interests, updateNextEnabled);
+  }
+
+  function renderGoalChips(){
+    const already = new Set([...state.tech, ...state.creative]);
+    const pool = [...MindMesh.TECH_SKILLS, ...MindMesh.CREATIVE_SKILLS].filter(s => !already.has(s));
+    renderChips(document.getElementById('chips-goals'), pool, state.learnGoals, updateCompleteness);
+  }
+
+  // ---------- custom skills & clubs adder ----------
+  document.getElementById('btn-add-skill').addEventListener('click', addCustomSkill);
+  document.getElementById('f-custom-skill').addEventListener('keydown', (e) => { if (e.key === 'Enter') addCustomSkill(); });
+
+  function addCustomSkill(){
+    const inp = document.getElementById('f-custom-skill');
+    const val = inp.value.trim();
+    if (!val) return;
+    state.tech.add(val);
+    inp.value = '';
+    renderSkillChips();
+    updateCardPreview();
+    updateLiveMesh();
+    if (window.MindMeshToast) window.MindMeshToast.show(`Added ${val} to skills ⚡`, { type: 'success' });
+  }
+
+  document.getElementById('btn-add-club').addEventListener('click', addCustomClub);
+  document.getElementById('f-custom-club').addEventListener('keydown', (e) => { if (e.key === 'Enter') addCustomClub(); });
+
+  function addCustomClub(){
+    const inp = document.getElementById('f-custom-club');
+    const val = inp.value.trim();
+    if (!val) return;
+    state.clubs.add(val);
+    inp.value = '';
+    renderClubChips();
+    updateCardPreview();
+    if (window.MindMeshToast) window.MindMeshToast.show(`Added club: ${val} 🏛️`, { type: 'success' });
+  }
+
+  // Quick college selection chips
+  document.querySelectorAll('.quick-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const col = chip.dataset.college;
+      state.college = col;
+      document.getElementById('f-college').value = col;
+      updateCardPreview();
+      updateCompleteness();
+      if (window.MindMeshSFX) window.MindMeshSFX.playClick();
+    });
+  });
+
+  // ---------- projects ----------
+  const projectList = document.getElementById('project-list');
+  function addProjectRow(prefill){
+    const id = projectCount++;
+    const row = document.createElement('div');
+    row.className = 'project-row';
+    row.dataset.id = id;
+    row.innerHTML = `
+      <div class="pf">
+        <input type="text" placeholder="Project title (e.g. Campus Bus ETA Predictor)" class="pj-title" value="${prefill ? prefill.title : ''}">
+        <input type="text" placeholder="One line about it (e.g. ML model predicting shuttle arrival using live GPS)" class="pj-desc" value="${prefill ? prefill.desc : ''}">
+      </div>
+      <button type="button" title="Remove">✕</button>`;
+    row.querySelector('button').addEventListener('click', () => {
+      row.remove();
+      state.projects = state.projects.filter(p => p.id !== id);
+      updateCompleteness();
+    });
+    row.querySelectorAll('input').forEach(inp => {
+      inp.addEventListener('input', () => {
+        const p = state.projects.find(p => p.id === id);
+        if (p){ p.title = row.querySelector('.pj-title').value; p.desc = row.querySelector('.pj-desc').value; }
+        updateCompleteness();
+      });
+    });
+    projectList.appendChild(row);
+    state.projects.push({ id, title: prefill ? prefill.title : '', desc: prefill ? prefill.desc : '' });
+  }
+  document.getElementById('add-project').addEventListener('click', () => addProjectRow());
+
+  // ---------- Google auto-fill ----------
+  whenAuthReady().then(applyGoogleUser);
+  onAuthChange(applyGoogleUser);
+
+  function applyGoogleUser(user){
+    if (!user) return;
+    document.getElementById('google-hint').style.display = 'none';
+    if (!state.name && user.displayName){
+      state.name = user.displayName;
+      document.getElementById('f-name').value = state.name;
+    }
+    if (user.email && !state.email){
+      state.email = user.email;
+      document.getElementById('f-email').value = state.email;
+      checkEmailDomain(user.email);
+    }
+    if (!state.photo && user.photoURL){
+      state.photo = user.photoURL;
+      photoImg.src = state.photo;
+      photoImg.style.display = 'block';
+      photoPlaceholder.style.display = 'none';
+    }
+    updateCardPreview();
+    updateNextEnabled();
+    updateLiveMesh();
+  }
+
+  function checkEmailDomain(email){
+    const tag = document.getElementById('email-verified-tag');
+    if (!tag) return;
+    const isCampus = email.includes('.edu') || email.includes('.ac.in') || email.includes('campus') || email.includes('.edu.in');
+    tag.style.display = isCampus ? 'inline-flex' : 'none';
+  }
+
+  // ---------- Tab switcher (ID card vs live mesh) ----------
+  const tabIdCard = document.getElementById('tab-id-card');
+  const tabMeshGraph = document.getElementById('tab-mesh-graph');
+  const viewIdCard = document.getElementById('view-id-card');
+  const viewMeshGraph = document.getElementById('view-mesh-graph');
+
+  tabIdCard.addEventListener('click', () => {
+    tabIdCard.classList.add('active');
+    tabMeshGraph.classList.remove('active');
+    viewIdCard.style.display = 'block';
+    viewMeshGraph.style.display = 'none';
+    if (window.MindMeshSFX) window.MindMeshSFX.playClick();
+  });
+
+  tabMeshGraph.addEventListener('click', () => {
+    tabMeshGraph.classList.add('active');
+    tabIdCard.classList.remove('active');
+    viewIdCard.style.display = 'none';
+    viewMeshGraph.style.display = 'block';
+    if (window.MindMeshSFX) window.MindMeshSFX.playClick();
+  });
+
+  // ---------- 3D Holographic Card Mouse Tilt ----------
+  const card = document.getElementById('campus-id-card');
+  if (card) {
+    card.addEventListener('mousemove', (e) => {
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const cx = rect.width / 2;
+      const cy = rect.height / 2;
+      const rotX = ((y - cy) / cy) * -9;
+      const rotY = ((x - cx) / cx) * 9;
+      card.style.setProperty('--mouse-x', `${(x / rect.width) * 100}%`);
+      card.style.setProperty('--mouse-y', `${(y / rect.height) * 100}%`);
+      card.style.transform = `perspective(800px) rotateX(${rotX}deg) rotateY(${rotY}deg) scale3d(1.02, 1.02, 1.02)`;
+    });
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = 'perspective(800px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
+    });
+  }
+
+  // ---------- Update Digital Student ID Card Preview ----------
+  function updateCardPreview(){
+    const name = state.name.trim() || 'Student Node';
+    const college = state.college.trim() || 'Campus University';
+    const usn = state.rollNo.trim() || 'USN: PENDING';
+    const degree = state.degree || 'B.Tech';
+    const branch = state.branch.trim() || 'Computer Science';
+    const year = state.year || '3rd Year';
+    const semester = state.semester || 'Sem 6';
+    const cgpa = state.cgpa.trim() || '8.92';
+
+    document.getElementById('card-name').textContent = name;
+    document.getElementById('card-college-name').textContent = college;
+    document.getElementById('card-usn').textContent = usn.startsWith('USN:') ? usn : `USN: ${usn}`;
+    document.getElementById('card-degree').textContent = `${degree} · ${branch}`;
+    document.getElementById('card-standing').textContent = `${year} · ${semester}`;
+    document.getElementById('card-cgpa').textContent = state.showCgpa ? `CGPA ${cgpa} ⭐` : 'Verified Active';
+
+    const cardPhoto = document.getElementById('card-photo-img');
+    const cardInitials = document.getElementById('card-initials');
+    if (state.photo){
+      cardPhoto.src = state.photo;
+      cardPhoto.style.display = 'block';
+      cardInitials.style.display = 'none';
+    } else {
+      cardPhoto.style.display = 'none';
+      cardInitials.style.display = 'flex';
+      cardInitials.textContent = MindMesh.initials(name);
+    }
+
+    // Dynamic hash
+    const hash = Math.abs(college.length * 37 + name.length * 13 + usn.length * 7).toString(16).toUpperCase();
+    document.getElementById('card-hash').textContent = `MESH-ID: #${hash.padStart(4, '0')}`;
+
+    // Tag pills on card
+    const tagsRow = document.getElementById('card-tags-row');
+    const clubArray = Array.from(state.clubs);
+    const skillsArray = [...state.tech, ...state.creative].slice(0, 3);
+    
+    let html = '';
+    if (clubArray.length > 0){
+      html += `<span class="campus-club-pill">🏛️ ${clubArray[0].split(' ')[0]}</span>`;
+    }
+    skillsArray.forEach(sk => {
+      html += `<span class="campus-skill-pill">${sk}</span>`;
+    });
+    tagsRow.innerHTML = html || '<span class="campus-skill-pill">AI Node</span>';
+
+    updateCompleteness();
+  }
+
+  // ---------- live mesh canvas ----------
+  const liveCanvas = document.getElementById('live-mesh-canvas');
+  const liveMesh = new MeshField(liveCanvas, { mode: 'live' });
+  liveMesh.start();
+
+  function updateLiveMesh(){
+    const labels = [...state.tech, ...state.creative, ...state.interests];
+    liveMesh.setHubLabel(state.name || 'YOU');
+    liveMesh.setHubImage(state.photo);
+    liveMesh.setLiveNodes(labels);
+    const summary = document.getElementById('mesh-summary');
+    if (labels.length === 0){
+      summary.innerHTML = '<span style="color:#5B6470;font-size:12.5px;width:100%;">Pick skills to see live nodes build.</span>';
+    } else {
+      summary.innerHTML = labels.map(l => `<span>${l}</span>`).join('');
+    }
+  }
+
+  // ---------- Profile Strength & Level Tier Score ----------
+  function updateCompleteness(){
+    let pct = 0;
+    if (state.name.trim()) pct += 10;
+    if (state.rollNo.trim()) pct += 10;
+    if (state.college.trim()) pct += 10;
+    if (state.photo) pct += 10;
+    if (state.branch.trim()) pct += 10;
+    if (state.clubs.size > 0) pct += 10;
+    
+    const skillCount = state.tech.size + state.creative.size;
+    if (skillCount >= 3) pct += 20;
+    else pct += Math.round((skillCount / 3) * 20);
+
+    if (state.interests.size > 0) pct += 10;
+    if (state.projects.some(p => p.title && p.title.trim())) pct += 10;
+    pct = Math.min(100, pct);
+
+    document.getElementById('completeness-pct').textContent = pct + '%';
+    document.getElementById('completeness-fill').style.width = pct + '%';
+
+    // Tier calculation
+    const tierLabel = document.getElementById('tier-label');
+    const hintEl = document.getElementById('completeness-hint');
+    if (pct < 35){
+      tierLabel.textContent = '🌱 Lvl 1: Campus Explorer';
+      tierLabel.style.color = '#8F97A3';
+      hintEl.textContent = 'Add college & USN';
+    } else if (pct < 65){
+      tierLabel.textContent = '⚡ Lvl 2: Rising Builder';
+      tierLabel.style.color = 'var(--violet)';
+      hintEl.textContent = 'Add skills & clubs';
+    } else if (pct < 85){
+      tierLabel.textContent = '🚀 Lvl 3: Hackathon Contender';
+      tierLabel.style.color = 'var(--amber)';
+      hintEl.textContent = 'Add projects to peak';
+    } else {
+      tierLabel.textContent = '🏆 Lvl 4: Elite Campus Catalyst ✦';
+      tierLabel.style.color = '#5BE298';
+      hintEl.textContent = 'Max mesh synergy reached';
+    }
+
+    // Badges update
+    const badgeCampus = document.getElementById('badge-campus');
+    const badgeSkills = document.getElementById('badge-skills');
+    const badgeProjects = document.getElementById('badge-projects');
+    const badgeTeam = document.getElementById('badge-team');
+
+    if (badgeCampus) badgeCampus.classList.toggle('unlocked', !!(state.name.trim() && state.rollNo.trim() && state.college.trim()));
+    if (badgeSkills) badgeSkills.classList.toggle('unlocked', skillCount >= 3);
+    if (badgeProjects) badgeProjects.classList.toggle('unlocked', state.projects.some(p => p.title && p.title.trim()));
+    if (badgeTeam) badgeTeam.classList.toggle('unlocked', pct >= 75);
+  }
+
+  // ---------- step navigation ----------
+  const steps = Array.from(document.querySelectorAll('.wizard-step'));
+  const btnBack = document.getElementById('btn-back');
+  const btnNext = document.getElementById('btn-next');
+  const btnGenerate = document.getElementById('btn-generate');
+
+  function updateNextEnabled(){
+    let ok = true;
+    if (current === 0) ok = state.name.trim().length > 0 && state.college.trim().length > 0;
+    if (current === 1) ok = state.branch.trim().length > 0;
+    if (current === 2) ok = (state.tech.size + state.creative.size) > 0;
+    if (current === 3) ok = state.interests.size > 0;
+    btnNext.disabled = !ok;
+  }
+
+  function goTo(i){
+    steps.forEach(s => s.classList.remove('active'));
+    current = i;
+    steps[current].classList.add('active');
+    btnBack.disabled = current === 0;
+    const isLast = current === steps.length - 1;
+    btnNext.style.display = isLast ? 'none' : 'inline-flex';
+    btnGenerate.style.display = isLast ? 'inline-flex' : 'none';
+
+    if (current === 5) renderGoalChips();
+    if (current === 6) renderReview();
+    renderProgress();
+    updateNextEnabled();
+    if (window.MindMeshSFX) window.MindMeshSFX.playClick();
+  }
+
+  // Input bindings
+  document.getElementById('f-name').addEventListener('input', (e) => {
+    state.name = e.target.value; updateCardPreview(); updateNextEnabled(); updateLiveMesh();
+  });
+  document.getElementById('f-roll').addEventListener('input', (e) => {
+    state.rollNo = e.target.value; updateCardPreview(); updateCompleteness();
+  });
+  document.getElementById('f-college').addEventListener('input', (e) => {
+    state.college = e.target.value; updateCardPreview(); updateNextEnabled();
+  });
+  document.getElementById('f-email').addEventListener('input', (e) => {
+    state.email = e.target.value; checkEmailDomain(e.target.value); updateCompleteness();
+  });
+  document.getElementById('f-degree').addEventListener('change', (e) => {
+    state.degree = e.target.value; updateCardPreview();
+  });
+  document.getElementById('f-branch').addEventListener('input', (e) => {
+    state.branch = e.target.value; updateCardPreview(); updateNextEnabled();
+  });
+  document.getElementById('f-year').addEventListener('change', (e) => {
+    state.year = e.target.value; updateCardPreview();
+  });
+  document.getElementById('f-semester').addEventListener('change', (e) => {
+    state.semester = e.target.value; updateCardPreview();
+  });
+  document.getElementById('f-cgpa').addEventListener('input', (e) => {
+    state.cgpa = e.target.value; updateCardPreview();
+  });
+  document.getElementById('f-show-cgpa').addEventListener('change', (e) => {
+    state.showCgpa = e.target.checked; updateCardPreview();
+  });
+  document.getElementById('f-achievements').addEventListener('input', (e) => {
+    state.achievements = e.target.value; updateCompleteness();
+  });
+  document.getElementById('f-github').addEventListener('input', (e) => { state.github = e.target.value; });
+  document.getElementById('f-linkedin').addEventListener('input', (e) => { state.linkedin = e.target.value; });
+  document.getElementById('f-target-role').addEventListener('change', (e) => { state.targetRole = e.target.value; });
+
+  btnBack.addEventListener('click', () => { if (current > 0) goTo(current - 1); });
+  btnNext.addEventListener('click', () => { if (!btnNext.disabled && current < steps.length - 1) goTo(current + 1); });
+
+  function renderReview(){
+    document.getElementById('rv-basics').innerHTML = `
+      <b style="display:block;font-size:15px;">${state.name || '—'}</b>
+      <span style="color:var(--violet);font-family:'JetBrains Mono',monospace;font-size:12px;display:block;">${state.rollNo ? `USN: ${state.rollNo}` : 'Campus ID not set'}</span>
+      <span style="color:var(--ink-soft);font-size:13px;display:block;margin-top:2px;">🏛️ ${state.college || 'College not set'}</span>
+      <span style="color:var(--ink-soft);font-size:12.5px;display:block;">${state.degree} · ${state.branch} (${state.year}, ${state.semester})</span>
+      <span style="color:#2F855A;font-size:12px;font-weight:700;display:inline-block;margin-top:4px;">${state.showCgpa ? `⭐ CGPA: ${state.cgpa || '8.92'}` : 'Academic Profile Verified'}</span>
+    `;
+
+    const clubsList = Array.from(state.clubs);
+    document.getElementById('rv-clubs').innerHTML = `
+      <b>Clubs & Societies:</b>
+      <div style="margin-top:4px;display:flex;flex-wrap:wrap;gap:4px;">
+        ${clubsList.length ? clubsList.map(c => `<span style="font-size:11px;background:#fff;border:1px solid var(--line);padding:2px 7px;border-radius:4px;">${c}</span>`).join('') : '<span style="color:var(--ink-faint);">None added</span>'}
+      </div>
+      ${state.achievements ? `<div style="margin-top:8px;font-size:12px;color:var(--ink-soft);"><b>Track Record:</b> ${state.achievements}</div>` : ''}
+    `;
+
+    const skills = [...state.tech, ...state.creative];
+    document.getElementById('rv-skills').innerHTML = skills.length
+      ? skills.map(s => `<span>${s}</span>`).join('') : '<span>None yet</span>';
+
+    const interests = [...state.interests];
+    const goals = [...state.learnGoals];
+    document.getElementById('rv-goals').innerHTML = `
+      <div style="display:flex;flex-wrap:wrap;gap:6px;">
+        ${interests.map(i => `<span style="font-size:11.5px;padding:3px 8px;border-radius:99px;background:var(--amber-tint);color:var(--amber-deep);">${i}</span>`).join('')}
+        ${goals.map(g => `<span style="font-size:11.5px;padding:3px 8px;border-radius:99px;background:var(--violet-tint);color:var(--violet-deep);">Goal: ${g}</span>`).join('')}
+      </div>
+      <div style="margin-top:8px;font-size:12px;color:var(--ink-soft);">Target Role: <b>${state.targetRole}</b></div>
+    `;
+  }
+
+  // ---------- generate: analyzing overlay -> in-page results ----------
+  const analyzing = document.getElementById('analyzing');
+  const analyzingMsg = document.getElementById('analyzing-msg');
+  const wizardShell = document.getElementById('wizard-shell');
+  const results = document.getElementById('results');
+
+  const MESSAGES = [
+    'Verifying collegiate credentials & USN…',
+    'Mapping your skill vectors to campus network…',
+    'Scanning campus clubs and active hackathons…',
+    'Analyzing complementary peer synergies…',
+    'Assembling your MindMesh Digital Passport…'
+  ];
+
+  btnGenerate.addEventListener('click', async () => {
+    const profile = {
+      name: state.name || 'Student Node',
+      uid: getMyUid(),
+      photo: state.photo || null,
+      college: state.college || 'RV College of Engineering (RVCE)',
+      rollNo: state.rollNo || '1RV22CS042',
+      email: state.email || '',
+      degree: state.degree || 'B.Tech / B.E',
+      branch: state.branch || 'Computer Science',
+      year: state.year || '3rd year',
+      semester: state.semester || '6th Semester',
+      cgpa: state.cgpa || '8.92',
+      showCgpa: state.showCgpa,
+      clubs: [...state.clubs],
+      achievements: state.achievements || '',
+      github: state.github || '',
+      linkedin: state.linkedin || '',
+      targetRole: state.targetRole || 'Full-Stack AI Engineer',
+      tech: [...state.tech], creative: [...state.creative],
+      interests: [...state.interests], learnGoals: [...state.learnGoals],
+      projects: state.projects.filter(p => p.title && p.title.trim().length > 0)
+    };
+
+    analyzing.classList.add('show');
+    let i = 0;
+    analyzingMsg.textContent = MESSAGES[0];
+    const interval = setInterval(() => {
+      i++;
+      if (i < MESSAGES.length) analyzingMsg.textContent = MESSAGES[i];
+    }, 450);
+
+    const minWait = new Promise(res => setTimeout(res, 2400));
+    const [saveResult, others] = await Promise.all([
+      saveProfileCloud(profile),
+      loadAllProfilesCloud(),
+      minWait
+    ]);
+
+    clearInterval(interval);
+    analyzing.classList.remove('show');
+    wizardShell.style.display = 'none';
+    renderResults(profile, MindMesh.mergePool(profile, others));
+    results.classList.add('show');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (window.MindMeshSFX) window.MindMeshSFX.playCelebration();
+    if (window.MindMeshToast) window.MindMeshToast.show('Campus Mesh Passport is Live! 🎉', { type: 'success' });
+  });
+
+  function renderResults(profile, pool){
+    const avatarEl = document.getElementById('res-avatar');
+    avatarEl.innerHTML = profile.photo
+      ? `<img src="${profile.photo}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`
+      : MindMesh.initials(profile.name);
+    document.getElementById('res-heading').textContent = `Node Verified: ${profile.name.split(' ')[0]} 🎓`;
+    document.getElementById('res-sub').textContent =
+      `Activated at ${profile.college}. Based on ${MindMesh.allSkills(profile).length} verified skills and ${profile.interests.length} domains, here are your optimal campus matches.`;
+
+    const matches = MindMesh.computeMatches(profile, 3, pool);
+    const matchesEl = document.getElementById('res-matches');
+    matchesEl.innerHTML = '';
+    matches.forEach((m, idx) => {
+      const card = document.createElement('div');
+      card.className = 'match-card';
+      card.style.animationDelay = (idx * 0.1) + 's';
+      const skillsTxt = [...m.student.tech, ...m.student.creative].slice(0,3).join(' · ') || m.student.interests.join(' · ');
+      card.innerHTML = `
+        <div class="top">
+          <div class="who">
+            <div class="avatar" style="background:${idx % 2 === 0 ? 'var(--violet)' : 'var(--amber)'};width:36px;height:36px;font-size:13px;">${MindMesh.initials(m.student.name)}</div>
+            <div>
+              <b>${m.student.name}</b>
+              <span style="font-size:11.5px;color:var(--ink-faint);">${m.student.college ? m.student.college.split(' ')[0] : ''} · ${m.student.year}</span>
+            </div>
+          </div>
+          <span class="match-score">${m.score}%</span>
+        </div>
+        <div class="tag-row" style="color:var(--ink-soft);">${skillsTxt.split(' · ').map(s=>`<span style="background:var(--bg-alt);color:var(--ink-soft);">${s}</span>`).join('')}</div>
+        <button type="button" class="select-team-btn" data-uid="${m.student.uid}">Add to my team</button>`;
+      const btn = card.querySelector('.select-team-btn');
+      btn.addEventListener('click', async (e) => {
+        btn.disabled = true; btn.textContent = 'Adding…';
+        await addTeammate(m.student);
+        btn.classList.add('added');
+        btn.textContent = 'Added to team';
+        const rect = btn.getBoundingClientRect();
+        if (window.MindMeshToast){
+          window.MindMeshToast.burst(rect.left + rect.width / 2, rect.top);
+          window.MindMeshToast.show(m.student.name.split(' ')[0] + ' added to your team', { type: 'success' });
+        }
+      });
+      matchesEl.appendChild(card);
+    });
+
+    const opps = MindMesh.computeOpportunities(profile, 4);
+    const oppsEl = document.getElementById('res-opps');
+    oppsEl.innerHTML = '';
+    opps.forEach((o, idx) => {
+      const row = document.createElement('div');
+      row.className = 'opp-item';
+      row.style.animationDelay = (idx * 0.08) + 's';
+      row.innerHTML = `
+        <div><div class="name">${o.opp.name}</div><div class="meta">${o.opp.meta}</div></div>
+        <span class="opp-tag">${o.recommended ? 'Recommended' : o.fit + '% fit'}</span>`;
+      oppsEl.appendChild(row);
+    });
+  }
+
+  document.getElementById('btn-edit').addEventListener('click', () => {
+    results.classList.remove('show');
+    wizardShell.style.display = 'grid';
+    goTo(0);
+  });
+
+  // ---------- init prefill ----------
+  const existing = MindMesh.loadProfile() || MindMesh.defaultProfile();
+  if (existing){
+    state.name = existing.name || '';
+    state.college = existing.college || 'RV College of Engineering (RVCE)';
+    state.rollNo = existing.rollNo || '1RV22CS042';
+    state.email = existing.email || '';
+    state.branch = existing.branch || 'Computer Science';
+    state.year = existing.year || '3rd year';
+    state.semester = existing.semester || '6th Semester';
+    state.cgpa = existing.cgpa || '8.92';
+    state.achievements = existing.achievements || '';
+    state.github = existing.github || '';
+    state.linkedin = existing.linkedin || '';
+    if (existing.clubs) state.clubs = new Set(existing.clubs);
+    if (existing.tech) state.tech = new Set(existing.tech);
+    if (existing.creative) state.creative = new Set(existing.creative);
+    if (existing.interests) state.interests = new Set(existing.interests);
+    if (existing.learnGoals) state.learnGoals = new Set(existing.learnGoals);
+    if (existing.projects && existing.projects.length) state.projects = existing.projects;
+
+    document.getElementById('f-name').value = state.name;
+    document.getElementById('f-college').value = state.college;
+    document.getElementById('f-roll').value = state.rollNo;
+    document.getElementById('f-branch').value = state.branch;
+    document.getElementById('f-year').value = state.year;
+    document.getElementById('f-semester').value = state.semester;
+    document.getElementById('f-cgpa').value = state.cgpa;
+    document.getElementById('f-achievements').value = state.achievements;
+    document.getElementById('f-github').value = state.github;
+    document.getElementById('f-linkedin').value = state.linkedin;
+    if (state.email) {
+      document.getElementById('f-email').value = state.email;
+      checkEmailDomain(state.email);
+    }
+  }
+
+  renderClubChips();
+  renderSkillChips();
+  renderInterestChips();
+  if (state.projects.length === 0) {
+    addProjectRow({ title: 'Campus Bus ETA Predictor', desc: 'ML model predicting shuttle arrival using live GPS pings.' });
+  } else {
+    state.projects.forEach(p => addProjectRow(p));
+  }
+  updateCardPreview();
+  updateLiveMesh();
+  goTo(0);
+})();
+</script>
+</body>
+</html>

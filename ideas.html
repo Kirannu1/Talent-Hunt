@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Idea Generator — MindMesh</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="nav">
+  <div class="nav-inner">
+    <a class="logo" href="index.html">
+      <svg class="logo-mark" viewBox="0 0 26 26" fill="none">
+        <circle cx="6" cy="7" r="3" fill="#6C4CE0"/>
+        <circle cx="20" cy="6" r="2.4" fill="#FF9F45"/>
+        <circle cx="19" cy="19" r="3.2" fill="#6C4CE0"/>
+        <circle cx="6" cy="19" r="2.2" fill="#FF9F45"/>
+        <path d="M6 7L20 6M6 7L19 19M20 6L19 19M6 7L6 19M6 19L19 19" stroke="#12161C" stroke-width="1" stroke-opacity="0.55"/>
+      </svg>
+      MindMesh
+    </a>
+    <nav class="nav-links">
+      <a href="index.html#how">How it works</a>
+      <a href="index.html#synthesizer">AI Studio</a>
+      <a class="active" href="ideas.html">Ideas</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="team.html">My Team</a>
+      <a href="inbox.html">Inbox <span class="inbox-badge" id="nav-inbox-badge" style="display:none;">1</span></a>
+    </nav>
+    <div class="nav-right">
+      <div id="auth-widget"></div>
+      <a class="nav-cta" href="profile.html">+ Build Profile</a>
+    </div>
+  </div>
+</header>
+
+<section class="page-hero" style="padding-bottom:0;">
+  <div class="wrap">
+    <span class="kicker mono">Idea generator</span>
+    <h1>Pick a problem. Get a real project brief.</h1>
+    <p>No blank-page syndrome — choose a category and MindMesh hands you a project name, the problem it solves, a feature list, a suggested stack, and the exact team you'll need.</p>
+  </div>
+</section>
+
+<div class="wrap" style="padding:44px 32px 100px;">
+
+  <div class="idea-grid" id="idea-grid"></div>
+
+  <div class="idea-brief" id="idea-brief">
+    <button type="button" class="idea-back" id="idea-back">← Choose a different idea</button>
+
+    <div class="idea-brief-head">
+      <span class="idea-cat" id="brief-cat"></span>
+      <h2 id="brief-title"></h2>
+      <p id="brief-problem"></p>
+    </div>
+
+    <div class="idea-section">
+      <h4>Key features</h4>
+      <div class="feature-list" id="brief-features"></div>
+    </div>
+
+    <div class="idea-section">
+      <h4>Suggested stack</h4>
+      <div class="stack-pills" id="brief-stack"></div>
+    </div>
+
+    <div class="idea-section">
+      <h4>Team required</h4>
+      <div class="role-grid" id="brief-roles"></div>
+    </div>
+
+    <div class="idea-cta">
+      <button type="button" class="btn-primary" id="find-team-btn">Find matched classmates →</button>
+      <a href="index.html#synthesizer" class="btn-outline" id="synth-team-link">⚡ Synthesize Squad with AI</a>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-bottom">
+      <span>© 2026 MindMesh. Built by students, for students.</span>
+      <span class="mono">status: mesh online</span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/app.js"></script>
+<script src="assets/idea-templates.js"></script>
+<script src="assets/sfx.js"></script>
+<script src="assets/toast.js"></script>
+<script src="assets/copilot.js"></script>
+<script src="assets/polish.js"></script>
+<script type="module" src="assets/auth-widget.js"></script>
+<script>
+(function(){
+  const grid = document.getElementById('idea-grid');
+  const brief = document.getElementById('idea-brief');
+
+  window.MindMeshIdeas.forEach((idea, idx) => {
+    const card = document.createElement('button');
+    card.type = 'button';
+    card.className = 'idea-card';
+    card.style.animationDelay = (idx * 0.04) + 's';
+    card.innerHTML = `<span class="idea-icon">${idea.icon}</span><b>${idea.title}</b><span>${idea.category}</span>`;
+    card.addEventListener('click', () => showIdea(idea));
+    grid.appendChild(card);
+  });
+
+  function showIdea(idea){
+    document.getElementById('brief-cat').textContent = idea.category;
+    document.getElementById('brief-title').textContent = idea.title;
+    document.getElementById('brief-problem').textContent = idea.problem;
+    document.getElementById('brief-features').innerHTML = idea.features.map(f => `<div>${f}</div>`).join('');
+    document.getElementById('brief-stack').innerHTML = idea.stack.map(s => `<span class="skill-pill hi">${s}</span>`).join('');
+    document.getElementById('brief-roles').innerHTML = idea.roles.map(r => `<div class="role-card"><div class="count">${r.count}</div><div class="rname">${r.role}</div></div>`).join('');
+
+    grid.style.display = 'none';
+    brief.classList.add('show');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    document.getElementById('find-team-btn').onclick = () => {
+      const roleTags = idea.roles.map(r => r.role);
+      sessionStorage.setItem('mindmesh_idea_focus', JSON.stringify({
+        title: idea.title, stack: idea.stack, roles: roleTags
+      }));
+      window.location.href = 'dashboard.html';
+    };
+  }
+
+  document.getElementById('idea-back').addEventListener('click', () => {
+    brief.classList.remove('show');
+    grid.style.display = 'grid';
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Team — MindMesh</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="nav">
+  <div class="nav-inner">
+    <a class="logo" href="index.html">
+      <svg class="logo-mark" viewBox="0 0 26 26" fill="none">
+        <circle cx="6" cy="7" r="3" fill="#6C4CE0"/>
+        <circle cx="20" cy="6" r="2.4" fill="#FF9F45"/>
+        <circle cx="19" cy="19" r="3.2" fill="#6C4CE0"/>
+        <circle cx="6" cy="19" r="2.2" fill="#FF9F45"/>
+        <path d="M6 7L20 6M6 7L19 19M20 6L19 19M6 7L6 19M6 19L19 19" stroke="#12161C" stroke-width="1" stroke-opacity="0.55"/>
+      </svg>
+      MindMesh
+    </a>
+    <nav class="nav-links">
+      <a href="index.html#how">How it works</a>
+      <a href="index.html#synthesizer">AI Studio</a>
+      <a href="ideas.html">Ideas</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a class="active" href="team.html">My Team</a>
+      <a href="inbox.html">Inbox <span class="inbox-badge" id="nav-inbox-badge" style="display:none;">1</span></a>
+    </nav>
+    <div class="nav-right">
+      <div id="auth-widget"></div>
+      <a class="nav-cta" href="dashboard.html">Dashboard</a>
+    </div>
+  </div>
+</header>
+
+<section class="page-hero" style="padding-bottom:0;">
+  <div class="wrap">
+    <span class="kicker mono">My team</span>
+    <h1>The people you've pulled together.</h1>
+    <p>Teammates you've added from your matches — message them directly, right from here.</p>
+  </div>
+</section>
+
+<div class="wrap" style="padding:44px 32px 100px;">
+  <div id="cloud-banner" class="empty-note" style="display:none;"></div>
+  <div id="team-container">
+    <div class="skel skel-card" style="height:180px;"></div>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-bottom">
+      <span>© 2026 MindMesh. Built by students, for students.</span>
+      <span class="mono">status: mesh online</span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/app.js"></script>
+<script src="assets/sfx.js"></script>
+<script src="assets/toast.js"></script>
+<script src="assets/copilot.js"></script>
+<script src="assets/polish.js"></script>
+<script type="module" src="assets/auth-widget.js"></script>
+<script type="module">
+import { isCloudReady, getMyUid, loadMyProfileCloud, removeTeammate, sendMessage, subscribeThread, markThreadRead, whenAuthReady } from './assets/cloud.js';
+
+(async function(){
+  await whenAuthReady();
+  const cloudBanner = document.getElementById('cloud-banner');
+  if (!isCloudReady()){
+    cloudBanner.style.display = 'block';
+    cloudBanner.innerHTML = 'Cloud sync isn\'t set up yet, so "Add to my team" and messaging only work once <code>assets/firebase-config.js</code> is configured — everyone needs to be talking to the same database.';
+  }
+
+  const container = document.getElementById('team-container');
+  const profile = await loadMyProfileCloud();
+  const team = (profile && profile.team) ? Object.values(profile.team) : [];
+
+  if (team.length === 0){
+    container.innerHTML = `
+      <div class="empty-team">
+        <h3 style="margin-bottom:10px;font-size:19px;">No teammates yet</h3>
+        <p style="max-width:44ch;margin:0 auto;">Go to your <a href="dashboard.html">dashboard</a>, the <a href="index.html#synthesizer">AI Team Synthesizer</a>, or finish <a href="profile.html">building your profile</a> to form your squad.</p>
+      </div>`;
+    return;
+  }
+
+  const myUid = getMyUid();
+  const unsubs = {};
+
+  // Aggregate combined team capabilities
+  const allTeamSkills = new Set();
+  (profile.tech || []).forEach(s => allTeamSkills.add(s));
+  (profile.creative || []).forEach(s => allTeamSkills.add(s));
+  team.forEach(t => {
+    (t.tech || []).forEach(s => allTeamSkills.add(s));
+    (t.creative || []).forEach(s => allTeamSkills.add(s));
+  });
+
+  const hasTech = [...allTeamSkills].some(s => MindMesh.TECH_SKILLS.includes(s));
+  const hasDesign = [...allTeamSkills].some(s => MindMesh.CREATIVE_SKILLS.includes(s));
+  const synergyRating = (hasTech && hasDesign) ? '97%' : '84%';
+
+  container.innerHTML = `
+    <div style="background:#fff;border:1px solid var(--line);border-radius:18px;padding:24px;margin-bottom:28px;box-shadow:0 8px 24px rgba(18,22,28,0.04);">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;">
+        <div style="display:flex;align-items:center;gap:14px;">
+          <div style="font-family:'Space Grotesk',sans-serif;font-size:32px;font-weight:800;color:var(--violet);">${synergyRating}</div>
+          <div>
+            <div style="font-size:12px;font-family:'JetBrains Mono',monospace;text-transform:uppercase;color:var(--ink-faint);letter-spacing:0.04em;">Overall Squad Synergy</div>
+            <div style="font-size:13.5px;font-weight:600;color:var(--ink);">Combined talent coverage: ${team.length + 1} students (You + ${team.length} teammates)</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <span style="background:${hasTech ? 'rgba(63,167,114,0.14)' : 'rgba(214,69,69,0.1)'};color:${hasTech ? '#2F855A' : '#C53030'};font-size:12px;font-weight:700;padding:6px 12px;border-radius:99px;">
+            ${hasTech ? '✓ Tech / ML Covered' : '⚠ Missing Core Dev'}
+          </span>
+          <span style="background:${hasDesign ? 'rgba(63,167,114,0.14)' : 'rgba(214,69,69,0.1)'};color:${hasDesign ? '#2F855A' : '#C53030'};font-size:12px;font-weight:700;padding:6px 12px;border-radius:99px;">
+            ${hasDesign ? '✓ UI/UX Design Covered' : '⚠ Missing UI/UX'}
+          </span>
+        </div>
+      </div>
+    </div>
+    <div class="team-grid" id="team-grid"></div>
+  `;
+  const grid = document.getElementById('team-grid');
+
+  team.forEach((mate, idx) => {
+    const skillsTxt = [...(mate.tech||[]), ...(mate.creative||[])].slice(0,4);
+    const card = document.createElement('div');
+    card.className = 'team-card';
+    card.style.animationDelay = (idx * 0.08) + 's';
+    card.innerHTML = `
+      <div class="top">
+        <div class="who">
+          <div class="avatar" style="background:${idx % 2 === 0 ? 'var(--violet)' : 'var(--amber)'};">${MindMesh.initials(mate.name)}</div>
+          <div><b>${mate.name}</b><span>${mate.year || ''}</span></div>
+        </div>
+        <button type="button" class="remove-teammate">Remove</button>
+      </div>
+      <div class="tag-row">${skillsTxt.map(s=>`<span style="background:var(--bg-alt);color:var(--ink-soft);">${s}</span>`).join('') || '<span style="background:var(--bg-alt);color:var(--ink-soft);">No listed skills</span>'}</div>
+      <button type="button" class="msg-toggle-btn">💬 Message ${mate.name.split(' ')[0]}</button>
+      <div class="chat-panel">
+        <div class="chat-messages"><div class="chat-empty">Say hi 👋</div></div>
+        <div class="chat-typing-row" id="typing-${mate.uid}" style="display:none;font-size:11.5px;color:var(--violet);margin:4px 0 6px 12px;font-weight:600;">
+          <span class="copilot-dot"></span> ${mate.name.split(' ')[0]} is typing…
+        </div>
+        <div class="chat-input-row">
+          <input type="text" placeholder="Write a message to ${mate.name.split(' ')[0]}…" maxlength="500">
+          <button type="button">Send</button>
+        </div>
+      </div>`;
+
+    grid.appendChild(card);
+
+    // remove
+    card.querySelector('.remove-teammate').addEventListener('click', async () => {
+      card.style.opacity = '0.4';
+      await removeTeammate(mate.uid);
+      card.remove();
+      if (window.MindMeshToast) window.MindMeshToast.show(mate.name.split(' ')[0] + ' removed from your team', { type: 'info' });
+      if (grid.children.length === 0){
+        container.innerHTML = `
+          <div class="empty-team">
+            <h3 style="margin-bottom:10px;font-size:19px;">No teammates yet</h3>
+            <p style="max-width:44ch;margin:0 auto;">Go to your <a href="dashboard.html">dashboard</a> and hit "Add to my team" on anyone the mesh matches you with.</p>
+          </div>`;
+      }
+    });
+
+    // chat toggle
+    const chatPanel = card.querySelector('.chat-panel');
+    const msgToggle = card.querySelector('.msg-toggle-btn');
+    const chatMessages = card.querySelector('.chat-messages');
+    const chatInput = card.querySelector('.chat-input-row input');
+    const chatSend = card.querySelector('.chat-input-row button');
+    const typingIndicator = card.querySelector(`#typing-${mate.uid}`);
+
+    function renderMessages(messages){
+      if (typingIndicator) typingIndicator.style.display = 'none';
+      if (!messages || messages.length === 0){
+        chatMessages.innerHTML = '<div class="chat-empty">Say hi to ' + mate.name.split(' ')[0] + ' 👋</div>';
+        return;
+      }
+      chatMessages.innerHTML = messages.map(m => {
+        const mine = m.from === myUid;
+        return `<div class="chat-bubble ${mine ? 'mine' : 'theirs'}">${escapeHtml(m.text)}</div>`;
+      }).join('');
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function escapeHtml(s){
+      const d = document.createElement('div');
+      d.textContent = s;
+      return d.innerHTML;
+    }
+
+    msgToggle.addEventListener('click', () => {
+      const opening = !chatPanel.classList.contains('open');
+      chatPanel.classList.toggle('open');
+      if (opening){
+        markThreadRead(mate.uid);
+        if (!unsubs[mate.uid]){
+          unsubs[mate.uid] = subscribeThread(mate.uid, renderMessages);
+        }
+        setTimeout(() => chatInput.focus(), 150);
+      }
+    });
+
+    async function doSend(){
+      const text = chatInput.value;
+      if (!text.trim()) return;
+      chatInput.value = '';
+      if (window.MindMeshSFX) window.MindMeshSFX.playClick();
+      await sendMessage(mate.uid, text);
+
+      // Show typing indicator for incoming reply
+      if (typingIndicator) {
+        setTimeout(() => {
+          typingIndicator.style.display = 'block';
+          chatMessages.scrollTop = chatMessages.scrollHeight;
+        }, 500);
+      }
+    }
+    chatSend.addEventListener('click', doSend);
+    chatInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') doSend(); });
+  });
+})();
+</script>
+</body>
+</html>

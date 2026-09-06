@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MindMesh — AI-Powered Student Talent & Team Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<div class="intro-splash" id="intro-splash">
+  <div class="intro-particles" id="intro-particles"></div>
+  <div class="intro-logo">
+    <svg class="mark" width="52" height="52" viewBox="0 0 26 26" fill="none">
+      <circle cx="6" cy="7" r="3" fill="#6C4CE0"/>
+      <circle cx="20" cy="6" r="2.4" fill="#FF9F45"/>
+      <circle cx="19" cy="19" r="3.2" fill="#6C4CE0"/>
+      <circle cx="6" cy="19" r="2.2" fill="#FF9F45"/>
+      <path d="M6 7L20 6M6 7L19 19M20 6L19 19M6 7L6 19M6 19L19 19" stroke="#ffffff" stroke-width="0.8" stroke-opacity="0.4"/>
+    </svg>
+    <h1>MindMesh</h1>
+    <span class="intro-tag">Every student is a node</span>
+  </div>
+</div>
+
+<header class="nav">
+  <div class="nav-inner">
+    <a class="logo" href="index.html">
+      <svg class="logo-mark" viewBox="0 0 26 26" fill="none">
+        <circle cx="6" cy="7" r="3" fill="#6C4CE0"/>
+        <circle cx="20" cy="6" r="2.4" fill="#FF9F45"/>
+        <circle cx="19" cy="19" r="3.2" fill="#6C4CE0"/>
+        <circle cx="6" cy="19" r="2.2" fill="#FF9F45"/>
+        <path d="M6 7L20 6M6 7L19 19M20 6L19 19M6 7L6 19M6 19L19 19" stroke="#12161C" stroke-width="1" stroke-opacity="0.55"/>
+      </svg>
+      MindMesh
+    </a>
+    <nav class="nav-links">
+      <a href="#how">How it works</a>
+      <a href="#synthesizer">AI Studio</a>
+      <a href="ideas.html">Ideas</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="team.html">My Team</a>
+      <a href="inbox.html">Inbox <span class="inbox-badge" id="nav-inbox-badge" style="display:none;">1</span></a>
+    </nav>
+    <div class="nav-right">
+      <div id="auth-widget"></div>
+      <a class="nav-cta" href="profile.html">+ Build Profile</a>
+    </div>
+  </div>
+</header>
+
+<section class="hero">
+  <canvas id="mesh-canvas"></canvas>
+  <div class="hero-inner">
+    <span class="eyebrow"><span class="dot"></span>Now mapping talent across 40+ campus clubs</span>
+    <h1>Every student is a node. <em>MindMesh finds the mesh.</em></h1>
+    <p class="hero-sub">A skill ecosystem for college campuses. Build a real profile, let the AI read your strengths and gaps, and get matched with the teammates, projects, and opportunities that actually fit — before the next hackathon deadline, not after.</p>
+    <div class="hero-ctas">
+      <a class="btn-primary" href="profile.html">Build your profile <span aria-hidden="true">→</span></a>
+      <a class="btn-primary" href="#synthesizer" style="background:linear-gradient(100deg,var(--violet),var(--amber));">⚡ AI Team Studio</a>
+      <a class="btn-ghost" href="#how">See how it works</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><b><span data-count-to="12400" data-suffix="+">0+</span></b><span>student profiles mapped</span></div>
+      <div class="stat"><b><span data-count-to="3100" data-suffix="+">0+</span></b><span>teams formed through matches</span></div>
+      <div class="stat"><b><span data-count-to="89" data-suffix="%">0%</span></b><span>say their team felt balanced</span></div>
+      <div class="stat"><b><span data-count-to="640" data-suffix="+">0+</span></b><span>skill gaps closed this term</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="problem">
+  <div class="wrap">
+    <div class="problem-grid">
+      <div class="problem-copy reveal">
+        <span class="kicker">The problem</span>
+        <h2 style="margin-bottom:22px;">Talent is scattered across campus. Nobody can see the whole picture.</h2>
+        <p>One student can train a neural network but has never touched Figma. Another can design a beautiful interface but has no one to wire it up. <b>They sit three buildings apart and never meet.</b></p>
+        <p>Skills live in scattered resumes, group chats, and half-finished GitHub repos. There's no shared map — so teams form by who you already know, not by who actually complements you.</p>
+        <p>MindMesh turns that scattered talent into a searchable, matchable graph — so the right people find each other before the deadline, not after.</p>
+      </div>
+      <div class="scatter-card reveal" style="transition-delay:.12s;">
+        <h4>&lt; unstructured campus skills &gt;</h4>
+        <div class="skill-cloud">
+          <span class="skill-pill hi">Python</span>
+          <span class="skill-pill">Photography</span>
+          <span class="skill-pill hi2">UI/UX</span>
+          <span class="skill-pill">Public Speaking</span>
+          <span class="skill-pill hi">Machine Learning</span>
+          <span class="skill-pill">Figma</span>
+          <span class="skill-pill">Video Editing</span>
+          <span class="skill-pill hi2">React</span>
+          <span class="skill-pill">Copywriting</span>
+          <span class="skill-pill hi">Data Analysis</span>
+          <span class="skill-pill">Event Ops</span>
+          <span class="skill-pill hi2">Product Design</span>
+          <span class="skill-pill">Arduino</span>
+          <span class="skill-pill hi">Prompt Engineering</span>
+          <span class="skill-pill">Illustration</span>
+        </div>
+        <div class="scatter-foot">No structure. No matching. Just tags floating with no connections — until they're mapped.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="how">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="kicker">How it works</span>
+      <h2>From scattered skills to a matched team</h2>
+      <p>Four stages, one continuous loop. The mesh gets smarter every time a student updates their profile or finishes a project.</p>
+    </div>
+    <div class="steps reveal">
+      <div class="step">
+        <span class="step-no mono">01</span>
+        <h3>Build a real profile</h3>
+        <p>List your skills, past projects, achievements, and what you actually want to learn next — not just a resume, a living skill graph.</p>
+      </div>
+      <div class="step">
+        <span class="step-no mono">02</span>
+        <h3>The AI reads the gaps</h3>
+        <p>MindMesh analyzes your profile against your goals and flags what's missing — a language, a framework, a design skill — before you ask.</p>
+      </div>
+      <div class="step">
+        <span class="step-no mono">03</span>
+        <h3>Get matched, not searched</h3>
+        <p>The engine pairs complementary students — a Python/AI builder with a React/UI-UX designer — into teams that actually cover each other's blind spots.</p>
+      </div>
+      <div class="step">
+        <span class="step-no mono">04</span>
+        <h3>Track growth, find openings</h3>
+        <p>A dashboard shows your progress over time and surfaces hackathons, internships, and projects sized to where you are right now.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="features" class="features">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="kicker">What's inside</span>
+      <h2>One mesh, six ways to use it</h2>
+      <p>Everything a student needs to turn individual ability into a working team — and everything a campus needs to see its own talent clearly.</p>
+    </div>
+    <div class="feature-grid reveal">
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(108,76,224,0.12);">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="#6C4CE0" stroke-width="1.8"/><path d="M4 20c0-4.4 3.6-7 8-7s8 2.6 8 7" stroke="#6C4CE0" stroke-width="1.8"/></svg>
+        </div>
+        <h3>Skill & project profiles</h3>
+        <p>One place for your abilities, finished projects, achievements, and the things you're actively trying to learn.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(255,159,69,0.14);">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="6" cy="6" r="2.6" stroke="#E67E22" stroke-width="1.8"/><circle cx="18" cy="18" r="2.6" stroke="#E67E22" stroke-width="1.8"/><path d="M8.4 7.6L15.6 16.4" stroke="#E67E22" stroke-width="1.8"/></svg>
+        </div>
+        <h3>AI teammate matching</h3>
+        <p>Pairs complementary skill sets automatically — technical with creative, builder with communicator — for balanced project teams.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(108,76,224,0.12);">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 18V10M11 18V5M18 18v-6" stroke="#6C4CE0" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </div>
+        <h3>Skill gap analysis</h3>
+        <p>Compares your current profile against your goals and recommends the next course, tool, or language worth learning.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(255,159,69,0.14);">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="3" stroke="#E67E22" stroke-width="1.8"/><path d="M8 12h8M8 16h5" stroke="#E67E22" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </div>
+        <h3>Opportunity feed</h3>
+        <p>Hackathons, internships, and open project seats ranked by how well they fit your current skill level and goals.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(108,76,224,0.12);">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 20l5-6 4 3 7-9" stroke="#6C4CE0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <h3>Growth dashboard</h3>
+        <p>Visual tracking of skill progress over each semester, so growth is visible, not just implied by a finished project.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(255,159,69,0.14);">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="#E67E22" stroke-width="1.8"/><path d="M3 9h18" stroke="#E67E22" stroke-width="1.8"/></svg>
+        </div>
+        <h3>Project showcase</h3>
+        <p>A public portfolio built from your real work — visible to teammates, mentors, and recruiters browsing the mesh.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="match" class="match-demo">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="kicker">AI matching, in practice</span>
+      <h2>Two different strengths. One balanced team.</h2>
+      <p>A student strong in machine learning gets paired with a student strong in interface design — the mesh reads what each profile is missing and closes the gap with the other person.</p>
+    </div>
+    <div class="match-stage reveal">
+      <div class="profile-card">
+        <div class="who">
+          <div class="avatar" style="background:var(--violet);">AR</div>
+          <div>
+            <b>Aran R.</b>
+            <span>3rd year · CS</span>
+          </div>
+        </div>
+        <div class="tag-row">
+          <span>Python</span><span>PyTorch</span><span>Data Modeling</span><span>Wants: UI systems</span>
+        </div>
+      </div>
+      <div class="match-link">
+        <span class="pct">92%</span>
+        <svg viewBox="0 0 64 24" fill="none"><path d="M0 12h64M52 4l12 8-12 8" stroke="url(#g1)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><defs><linearGradient id="g1" x1="0" y1="0" x2="64" y2="0"><stop stop-color="#FF9F45"/><stop offset="1" stop-color="#6C4CE0"/></linearGradient></defs></svg>
+        <span class="lbl">match score</span>
+      </div>
+      <div class="profile-card">
+        <div class="who">
+          <div class="avatar" style="background:var(--amber);">MS</div>
+          <div>
+            <b>Meera S.</b>
+            <span>2nd year · Design</span>
+          </div>
+        </div>
+        <div class="tag-row">
+          <span>Figma</span><span>UI/UX</span><span>Prototyping</span><span>Wants: ML basics</span>
+        </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ AI TEAM SYNTHESIZER STUDIO ============ -->
+<section id="synthesizer" class="synthesizer-section">
+  <div class="wrap">
+    <div class="section-head reveal" style="text-align:center;margin-bottom:32px;">
+      <span class="kicker mono" style="color:var(--amber);">Interactive Demo Studio</span>
+      <h2 style="color:#fff;">AI Team Synthesizer Studio</h2>
+      <p style="color:#C6CBD3;max-width:54ch;margin:0 auto;">Select a campus project challenge and watch MindMesh's matching engine scan 12,400+ student nodes to synthesize an optimal, complementary squad in real time.</p>
+    </div>
+
+    <div class="synthesizer-box reveal">
+      <div class="synth-controls">
+        <div class="synth-field">
+          <label for="synth-project-select">1. Select Project Mission</label>
+          <select id="synth-project-select">
+            <option value="attendance">Smart Attendance & Defaulter Intelligence (AI + QR)</option>
+            <option value="canteen">MealQueue — Smart Canteen & Live Wait Estimates</option>
+            <option value="wellness">MindCheck — Peer Mental Wellness Companion</option>
+            <option value="sustainability">GreenCampus — Waste & Energy IoT Monitor</option>
+            <option value="lostfound">FoundIt — Image-Matching Lost & Found</option>
+          </select>
+        </div>
+
+        <div class="synth-field">
+          <label for="synth-size-select">2. Desired Squad Size</label>
+          <select id="synth-size-select">
+            <option value="3" selected>3-Person Squad (Fast Iteration)</option>
+            <option value="2">2-Person Pair (Dynamic Duo)</option>
+            <option value="4">4-Person Hackathon Team (Full Stack)</option>
+          </select>
+        </div>
+
+        <button type="button" class="synth-btn" id="run-synthesizer-btn">
+          <span>⚡ Synthesize Optimal Team</span>
+        </button>
+      </div>
+
+      <!-- Radar Scanning Stage -->
+      <div class="radar-stage" id="synth-radar-stage">
+        <div class="radar-sweep-circle" id="radar-circle">
+          <div class="radar-sweep-line"></div>
+        </div>
+        <div class="radar-scan-text" id="radar-status-text">SYSTEM READY — CLICK TO SYNTHESIZE SQUAD</div>
+        <p class="radar-sub" id="radar-sub-text">MindMesh balances coding, interface design, data modeling, and execution across campus branches.</p>
+      </div>
+
+      <!-- Synthesized Output Stage -->
+      <div class="synth-results" id="synth-results-stage">
+        <div class="synth-stats-row">
+          <div class="synergy-score-badge">
+            <span class="score-val" id="synth-synergy-score">97%</span>
+            <div>
+              <div class="score-label">Team Synergy Rating</div>
+              <div style="font-size:12px;color:#3FA772;font-weight:700;">★ High Complementary Balance</div>
+            </div>
+          </div>
+          <div class="blindspot-pill">
+            <span>🛡️ 0 Overlaps · Zero Skill Blind Spots</span>
+          </div>
+          <button type="button" class="btn-primary" id="synth-add-team-btn" style="padding:10px 20px;font-size:13.5px;">
+            Save Squad to My Team →
+          </button>
+        </div>
+
+        <div class="squad-cards-grid" id="squad-cards-grid"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="dashboard-preview">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="kicker">Your dashboard</span>
+      <h2>Watch your skills move, not just your résumé</h2>
+      <p>Growth by category, ranked opportunities, and the gaps worth closing this semester — all in one view.</p>
+    </div>
+    <div class="dash-grid reveal">
+      <div class="dash-panel">
+        <h4>Skill growth — this semester</h4>
+        <div class="growth-row"><span class="lbl">Machine Learning</span><div class="bar-track"><div class="bar-fill" style="width:82%;"></div></div><span class="val mono">82%</span></div>
+        <div class="growth-row"><span class="lbl">UI Design</span><div class="bar-track"><div class="bar-fill" style="width:41%;"></div></div><span class="val mono">41%</span></div>
+        <div class="growth-row"><span class="lbl">Public Speaking</span><div class="bar-track"><div class="bar-fill" style="width:58%;"></div></div><span class="val mono">58%</span></div>
+        <div class="growth-row"><span class="lbl">Team Leadership</span><div class="bar-track"><div class="bar-fill" style="width:67%;"></div></div><span class="val mono">67%</span></div>
+        <div class="growth-row"><span class="lbl">React</span><div class="bar-track"><div class="bar-fill" style="width:29%;"></div></div><span class="val mono">29%</span></div>
+      </div>
+      <div class="dash-panel">
+        <h4>Opportunities matched to you</h4>
+        <div class="opp-list">
+          <div class="opp-item">
+            <div><div class="name">HackNorth — Campus AI Track</div><div class="meta">Team of 4 needed · starts in 6 days</div></div>
+            <span class="opp-tag">96% fit</span>
+          </div>
+          <div class="opp-item">
+            <div><div class="name">Summer ML Internship — CoreStack</div><div class="meta">Applications close Sept 12</div></div>
+            <span class="opp-tag">88% fit</span>
+          </div>
+          <div class="opp-item">
+            <div><div class="name">Design Systems micro-course</div><div class="meta">Closes your top skill gap</div></div>
+            <span class="opp-tag">Recommended</span>
+          </div>
+          <div class="opp-item">
+            <div><div class="name">Open seat: Campus Nav App</div><div class="meta">Needs a backend + ML contributor</div></div>
+            <span class="opp-tag">91% fit</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:36px;">
+      <a class="btn-outline" href="dashboard.html">Open the full dashboard →</a>
+    </div>
+  </div>
+</section>
+
+<section class="impact">
+  <div class="wrap">
+    <div class="impact-grid reveal">
+      <div class="impact-item"><b>12,400+</b><span>student profiles mapped across campus</span></div>
+      <div class="impact-item"><b>3,100+</b><span>project teams formed through matching</span></div>
+      <div class="impact-item"><b>640+</b><span>skill gaps closed via recommended courses</span></div>
+      <div class="impact-item"><b>210+</b><span>hackathons and internships surfaced this year</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CAMPUS TALENT RADAR & HEATMAP ============ -->
+<section id="campus-radar" class="campus-radar-wrap">
+  <div class="wrap" style="padding-bottom:40px;">
+    <div class="section-head reveal">
+      <span class="kicker">Campus intelligence layer</span>
+      <h2>Live Campus Talent Radar</h2>
+      <p>Real-time talent density and collaboration activity across academic departments.</p>
+    </div>
+
+    <div class="dept-grid reveal">
+      <div class="dept-card">
+        <h4>Computer Science & AI</h4>
+        <div class="dept-count mono">4,280 active nodes</div>
+        <div class="dept-bar"><div class="dept-bar-fill" style="width:92%;"></div></div>
+        <div class="dept-top-skills">
+          <span>Python</span><span>Machine Learning</span><span>SQL</span><span>React</span>
+        </div>
+      </div>
+
+      <div class="dept-card">
+        <h4>Design & Interaction</h4>
+        <div class="dept-count mono">2,640 active nodes</div>
+        <div class="dept-bar"><div class="dept-bar-fill" style="width:78%;"></div></div>
+        <div class="dept-top-skills">
+          <span>UI/UX Design</span><span>Figma</span><span>3D Modeling</span><span>Motion</span>
+        </div>
+      </div>
+
+      <div class="dept-card">
+        <h4>Electronics & IoT</h4>
+        <div class="dept-count mono">3,120 active nodes</div>
+        <div class="dept-bar"><div class="dept-bar-fill" style="width:84%;"></div></div>
+        <div class="dept-top-skills">
+          <span>Arduino / IoT</span><span>C++</span><span>Robotics</span><span>Sensors</span>
+        </div>
+      </div>
+
+      <div class="dept-card">
+        <h4>Management & Pitch</h4>
+        <div class="dept-count mono">2,360 active nodes</div>
+        <div class="dept-bar"><div class="dept-bar-fill" style="width:72%;"></div></div>
+        <div class="dept-top-skills">
+          <span>Public Speaking</span><span>Copywriting</span><span>Product</span><span>Growth</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="activity-ticker reveal">
+      <span class="ticker-badge">Live Node Activity</span>
+      <div class="ticker-stream" id="ticker-stream">
+        Aran R. (CS) and Meera S. (Design) matched with 96% synergy for HackNorth AI track.
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="join">
+  <div class="cta-wrap">
+    <div class="cta-band reveal">
+      <h2>Your skills are already there. Let the mesh find who they fit.</h2>
+      <p>Build a profile in under five minutes. The first matches usually show up before you finish your coffee.</p>
+      <div class="cta-actions">
+        <a class="btn-dark" href="profile.html">Build your profile</a>
+        <a class="btn-outline" href="#">Bring MindMesh to your campus</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <div class="foot-logo">
+          <svg width="22" height="22" viewBox="0 0 26 26" fill="none">
+            <circle cx="6" cy="7" r="3" fill="#6C4CE0"/>
+            <circle cx="20" cy="6" r="2.4" fill="#FF9F45"/>
+            <circle cx="19" cy="19" r="3.2" fill="#6C4CE0"/>
+            <circle cx="6" cy="19" r="2.2" fill="#FF9F45"/>
+            <path d="M6 7L20 6M6 7L19 19M20 6L19 19M6 7L6 19M6 19L19 19" stroke="#12161C" stroke-width="1" stroke-opacity="0.55"/>
+          </svg>
+          MindMesh
+        </div>
+        <p class="foot-tag">The AI-powered talent and team intelligence layer for college campuses.</p>
+      </div>
+      <div class="foot-cols">
+        <div class="foot-col">
+          <h5>Platform</h5>
+          <a href="#how">How it works</a>
+          <a href="#features">Features</a>
+          <a href="#match">Matching engine</a>
+          <a href="dashboard.html">Dashboard</a>
+        </div>
+        <div class="foot-col">
+          <h5>For campuses</h5>
+          <a href="#">Bring MindMesh here</a>
+          <a href="#">For clubs & chapters</a>
+          <a href="#">For hackathon organizers</a>
+        </div>
+        <div class="foot-col">
+          <h5>Company</h5>
+          <a href="#">About</a>
+          <a href="#">Contact</a>
+        </div>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 MindMesh. Built by students, for students.</span>
+      <span class="mono">status: mesh online</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // intro splash: builds the particle burst, then removes the overlay
+  // from the DOM once its animation finishes (never blocks the page)
+  (function(){
+    var splash = document.getElementById('intro-splash');
+    if (!splash) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+      splash.remove();
+      return;
+    }
+    var wrap = document.getElementById('intro-particles');
+    var n = 10;
+    for (var i = 0; i < n; i++){
+      var s = document.createElement('span');
+      var angle = (i / n) * Math.PI * 2;
+      var dist = 150 + Math.random() * 70;
+      s.style.setProperty('--dx', Math.cos(angle) * dist + 'px');
+      s.style.setProperty('--dy', Math.sin(angle) * dist + 'px');
+      s.style.animationDelay = (0.15 + Math.random() * 0.2) + 's';
+      s.style.background = i % 2 === 0 ? '#6C4CE0' : '#FF9F45';
+      wrap.appendChild(s);
+    }
+    document.body.style.overflow = 'hidden';
+    setTimeout(function(){
+      splash.remove();
+      document.body.style.overflow = '';
+    }, 2200);
+  })();
+</script>
+<script src="assets/app.js"></script>
+<script src="assets/sfx.js"></script>
+<script src="assets/toast.js"></script>
+<script src="assets/copilot.js"></script>
+<script type="module" src="assets/auth-widget.js"></script>
+<script src="assets/mesh.js"></script>
+<script src="assets/polish.js"></script>
+<script>
+  const heroCanvas = document.getElementById('mesh-canvas');
+  const heroMesh = new MeshField(heroCanvas, { mode: 'ambient' });
+  heroMesh.start();
+</script>
+<script type="module">
+import { addTeammate } from './assets/cloud.js';
+
+const PRESET_MISSIONS = {
+  attendance: {
+    title: 'Smart Attendance & Defaulter Intelligence',
+    squad: [
+      { name: 'Aran Rao', role: 'AI/ML & Core Backend', year: '3rd year · CS', skills: ['Python', 'Machine Learning', 'SQL'], uid: 'mock_kabir_anand' },
+      { name: 'Meera Sharma', role: 'UI/UX & Product Design', year: '2nd year · Design', skills: ['Figma', 'UI/UX Design', 'Design Systems'], uid: 'mock_meera_sharma' },
+      { name: 'Wei Chen', role: 'Frontend & API Integration', year: '3rd year · CS', skills: ['React', 'Node.js', 'JavaScript'], uid: 'mock_wei_chen' },
+      { name: 'Ananya Iyer', role: 'Pitch & Academic Ops', year: '1st year · Comm.', skills: ['Public Speaking', 'Content Strategy'], uid: 'mock_ananya_iyer' }
+    ],
+    synergy: { 2: '96%', 3: '97%', 4: '99%' }
+  },
+  canteen: {
+    title: 'MealQueue — Smart Canteen & Live Wait Estimates',
+    squad: [
+      { name: 'Wei Chen', role: 'Full-Stack Web & Realtime', year: '3rd year · CS', skills: ['React', 'Node.js', 'WebSockets'], uid: 'mock_wei_chen' },
+      { name: 'Meera Sharma', role: 'UI/UX & Mobile Interface', year: '2nd year · Design', skills: ['UI/UX Design', 'Figma', 'Prototyping'], uid: 'mock_meera_sharma' },
+      { name: 'Priya Nair', role: 'Mobile Architecture', year: '2nd year · CS', skills: ['Java', 'Android', 'REST APIs'], uid: 'mock_priya_nair' },
+      { name: 'Ananya Iyer', role: 'Ops & Merchant Onboarding', year: '1st year · Comm.', skills: ['Copywriting', 'Public Speaking'], uid: 'mock_ananya_iyer' }
+    ],
+    synergy: { 2: '95%', 3: '98%', 4: '99%' }
+  },
+  wellness: {
+    title: 'MindCheck — Peer Mental Wellness Companion',
+    squad: [
+      { name: 'Aran Rao', role: 'NLP & Emotion Inference', year: '3rd year · CS', skills: ['Python', 'Machine Learning', 'Data Modeling'], uid: 'mock_kabir_anand' },
+      { name: 'Meera Sharma', role: 'Empathetic UX & Interface', year: '2nd year · Design', skills: ['UI/UX Design', 'Illustration', 'Figma'], uid: 'mock_meera_sharma' },
+      { name: 'Wei Chen', role: 'Frontend & Secure Storage', year: '3rd year · CS', skills: ['React', 'JavaScript', 'Firebase'], uid: 'mock_wei_chen' },
+      { name: 'Ananya Iyer', role: 'Community & Peer Support', year: '1st year · Comm.', skills: ['Content Strategy', 'Public Speaking'], uid: 'mock_ananya_iyer' }
+    ],
+    synergy: { 2: '96%', 3: '98%', 4: '99%' }
+  },
+  sustainability: {
+    title: 'GreenCampus — Waste & Energy IoT Monitor',
+    squad: [
+      { name: 'Dev Patel', role: 'IoT Firmware & Sensors', year: '3rd year · ECE', skills: ['Arduino / IoT', 'C++', 'Robotics'], uid: 'mock_dev_patel' },
+      { name: 'Aran Rao', role: 'Data Analytics & Modeling', year: '3rd year · CS', skills: ['Python', 'Data Science', 'Machine Learning'], uid: 'mock_kabir_anand' },
+      { name: 'Meera Sharma', role: 'Dashboard UI & Visualization', year: '2nd year · Design', skills: ['Figma', 'UI/UX Design', 'Graphic Design'], uid: 'mock_meera_sharma' },
+      { name: 'Wei Chen', role: 'Web Platform & Alerts', year: '3rd year · CS', skills: ['React', 'Node.js', 'SQL'], uid: 'mock_wei_chen' }
+    ],
+    synergy: { 2: '94%', 3: '97%', 4: '99%' }
+  },
+  lostfound: {
+    title: 'FoundIt — Image-Matching Lost & Found',
+    squad: [
+      { name: 'Aran Rao', role: 'Computer Vision & Embedding', year: '3rd year · CS', skills: ['Python', 'PyTorch', 'Data Science'], uid: 'mock_kabir_anand' },
+      { name: 'Wei Chen', role: 'Full-Stack Web App', year: '3rd year · CS', skills: ['React', 'Node.js', 'JavaScript'], uid: 'mock_wei_chen' },
+      { name: 'Meera Sharma', role: 'Mobile UI & Flow Design', year: '2nd year · Design', skills: ['UI/UX Design', 'Figma', 'Prototyping'], uid: 'mock_meera_sharma' },
+      { name: 'Ananya Iyer', role: 'Campus Outreach & Verification', year: '1st year · Comm.', skills: ['Public Speaking', 'Copywriting'], uid: 'mock_ananya_iyer' }
+    ],
+    synergy: { 2: '95%', 3: '97%', 4: '99%' }
+  }
+};
+
+let currentSynthesizedSquad = [];
+
+const runBtn = document.getElementById('run-synthesizer-btn');
+const radarStage = document.getElementById('synth-radar-stage');
+const resultsStage = document.getElementById('synth-results-stage');
+const statusText = document.getElementById('radar-status-text');
+const cardsGrid = document.getElementById('squad-cards-grid');
+const synergyEl = document.getElementById('synth-synergy-score');
+const addTeamBtn = document.getElementById('synth-add-team-btn');
+
+if (runBtn) {
+  runBtn.addEventListener('click', () => {
+    const projectKey = document.getElementById('synth-project-select').value;
+    const size = parseInt(document.getElementById('synth-size-select').value, 10);
+    const data = PRESET_MISSIONS[projectKey] || PRESET_MISSIONS.attendance;
+
+    runBtn.disabled = true;
+    resultsStage.style.display = 'none';
+    radarStage.style.display = 'flex';
+
+    if (window.MindMeshSFX) window.MindMeshSFX.playScan();
+
+    const steps = [
+      { t: 0, text: 'SCANNING 12,400+ CAMPUS NODES...' },
+      { t: 400, text: 'ANALYZING COMPLEMENTARY SKILL VECTORS...' },
+      { t: 900, text: 'PAIRING CODING WITH DESIGN & PRODUCT LEADERSHIP...' },
+      { t: 1400, text: 'ELIMINATING BLIND SPOTS & MAXIMIZING SYNERGY...' }
+    ];
+
+    steps.forEach(s => {
+      setTimeout(() => {
+        statusText.textContent = s.text;
+        if (window.MindMeshSFX) window.MindMeshSFX.playClick();
+      }, s.t);
+    });
+
+    setTimeout(() => {
+      radarStage.style.display = 'none';
+      resultsStage.style.display = 'block';
+      runBtn.disabled = false;
+
+      currentSynthesizedSquad = data.squad.slice(0, size);
+      synergyEl.textContent = data.synergy[size] || '97%';
+
+      cardsGrid.innerHTML = currentSynthesizedSquad.map((m, idx) => `
+        <div class="squad-member-card" style="animation-delay:${idx * 0.1}s;">
+          <div class="squad-role-tag">${m.role}</div>
+          <div class="squad-member-who">
+            <div class="av" style="background:${idx % 2 === 0 ? 'var(--violet)' : 'var(--amber)'};">
+              ${MindMesh.initials(m.name)}
+            </div>
+            <div>
+              <b>${m.name}</b>
+              <span>${m.year}</span>
+            </div>
+          </div>
+          <div class="squad-skills">
+            ${m.skills.map(s => `<span>${s}</span>`).join('')}
+          </div>
+        </div>
+      `).join('');
+
+      if (window.MindMeshSFX) window.MindMeshSFX.playCelebration();
+      if (window.MindMeshToast) {
+        const rect = runBtn.getBoundingClientRect();
+        window.MindMeshToast.burst(rect.left + rect.width / 2, rect.top);
+        window.MindMeshToast.show(`Optimal ${size}-Person Squad Synthesized! 🚀`, { type: 'success' });
+      }
+    }, 1700);
+  });
+}
+
+if (addTeamBtn) {
+  addTeamBtn.addEventListener('click', async () => {
+    addTeamBtn.disabled = true;
+    addTeamBtn.textContent = 'Saving Squad…';
+
+    for (const member of currentSynthesizedSquad) {
+      await addTeammate({
+        uid: member.uid,
+        name: member.name,
+        year: member.year,
+        tech: member.skills.filter(s => MindMesh.TECH_SKILLS.includes(s)),
+        creative: member.skills.filter(s => MindMesh.CREATIVE_SKILLS.includes(s))
+      });
+    }
+
+    addTeamBtn.textContent = 'Squad Added to My Team ✓';
+    if (window.MindMeshSFX) window.MindMeshSFX.playChime();
+    if (window.MindMeshToast) {
+      window.MindMeshToast.show('All squad members added to your team!', { type: 'success' });
+    }
+    setTimeout(() => {
+      window.location.href = 'team.html';
+    }, 800);
+  });
+}
+
+// Live ticker rotation
+const tickerStream = document.getElementById('ticker-stream');
+if (tickerStream) {
+  const events = [
+    'Aran R. (CS) and Meera S. (Design) matched with 96% synergy for HackNorth AI track.',
+    'Dev P. (ECE) opened an IoT Robotics seat: Autonomous Solar Weed Picker.',
+    'Tanvi R. (Design) closed skill gap: Design Systems Micro-Course (Certified).',
+    'New Hackathon bounty: Campus FinTech Challenge (48h Sprint, 24 teams live).',
+    'Kabir A. (CS) endorsed by 18 classmates for Cloud Backend & AWS deployment.',
+    'Wei Chen (CS) joined MindCheck wellness project as Lead Full-Stack engineer.'
+  ];
+  let eIdx = 0;
+  setInterval(() => {
+    eIdx = (eIdx + 1) % events.length;
+    tickerStream.style.opacity = '0';
+    setTimeout(() => {
+      tickerStream.textContent = events[eIdx];
+      tickerStream.style.opacity = '1';
+    }, 250);
+  }, 3400);
+}
+</script>
+</body>
+</html>

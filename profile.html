@@ -1079,13 +1079,63 @@ import { isCloudReady, getMyUid, saveProfileCloud, loadAllProfilesCloud, addTeam
     const matchesEl = document.getElementById('res-matches');
     matchesEl.innerHTML = '';
     if (!matches || matches.length === 0){
-      matchesEl.innerHTML = `
-        <div style="grid-column:1/-1;padding:32px;text-align:center;background:#fff;border-radius:14px;border:1px solid var(--line);">
-          <div style="font-size:32px;margin-bottom:10px;">🌱</div>
-          <div style="font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:700;margin-bottom:6px;">You are the pioneer node on your campus!</div>
-          <p style="font-size:13.5px;color:var(--ink-soft);max-width:440px;margin:0 auto 16px;">As other students map their profiles, MindMesh AI will automatically calculate synergy scores and connect you to complementary builders.</p>
-          <a href="dashboard.html" class="btn-primary" style="display:inline-flex;text-decoration:none;padding:10px 20px;">Open Student Dashboard →</a>
-        </div>`;
+      if (pool && pool.length > 0) {
+        document.getElementById('res-heading').textContent = `Node Verified: ${profile.name.split(' ')[0]} 🎓`;
+        const bannerNotice = document.createElement('div');
+        bannerNotice.style.cssText = 'grid-column:1/-1;margin-bottom:12px;font-size:13.5px;color:var(--ink-soft);background:var(--bg-alt);padding:12px 18px;border-radius:10px;border:1px solid var(--line);';
+        bannerNotice.innerHTML = `👥 <b>Available Teammates (${pool.length}):</b> While AI calculates your specific complementary synergy scores, here are all students who have built and mapped profiles:`;
+        matchesEl.appendChild(bannerNotice);
+
+        pool.forEach((student, idx) => {
+          const card = document.createElement('div');
+          card.className = 'match-card';
+          card.style.animationDelay = (idx * 0.08) + 's';
+          const skillsTxt = [...(student.tech||[]), ...(student.creative||[])].slice(0,3).join(' · ') || (student.interests||[]).join(' · ');
+          const avatarHtml = student.photo
+            ? `<img src="${student.photo}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`
+            : MindMesh.initials(student.name);
+
+        const alreadyOnTeam = profile.team && profile.team[student.uid];
+        card.innerHTML = `
+            <div class="top">
+              <div class="who">
+                <div class="avatar" style="background:${idx % 2 === 0 ? 'var(--violet)' : 'var(--amber)'};width:36px;height:36px;font-size:13px;overflow:hidden;padding:0;display:flex;align-items:center;justify-content:center;">${avatarHtml}</div>
+                <div>
+                  <b>${MindMesh.escapeHtml(student.name)}</b>
+                  <span style="font-size:11.5px;color:var(--ink-faint);">${MindMesh.escapeHtml(student.college ? student.college.split(' ')[0] : '')}${student.year ? ' · ' + MindMesh.escapeHtml(student.year) : ''}</span>
+                </div>
+              </div>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:10.5px;font-weight:700;color:#2F855A;background:rgba(63,167,114,0.12);padding:2px 8px;border-radius:99px;">Available</span>
+            </div>
+            <div class="tag-row" style="color:var(--ink-soft);">${skillsTxt ? skillsTxt.split(' · ').map(s=>`<span style="background:var(--bg-alt);color:var(--ink-soft);">${MindMesh.escapeHtml(s)}</span>`).join('') : '<span style="background:var(--bg-alt);color:var(--ink-soft);">Campus Node</span>'}</div>
+            <div style="display:flex;gap:8px;margin-top:10px;align-items:center;">
+              <button type="button" class="select-team-btn${alreadyOnTeam ? ' added' : ''}" data-uid="${student.uid}" style="flex:1;margin-top:0;">${alreadyOnTeam ? 'Added to team' : 'Add to my team'}</button>
+              <a href="inbox.html?chat=${student.uid}" class="btn-outline" style="padding:8px 12px;border-radius:9px;font-size:12px;text-decoration:none;display:inline-flex;align-items:center;gap:4px;white-space:nowrap;">💬 Chat</a>
+            </div>`;
+          const btn = card.querySelector('.select-team-btn');
+          btn.addEventListener('click', async (e) => {
+            if (btn.classList.contains('added')) return;
+            btn.disabled = true; btn.textContent = 'Adding…';
+            await addTeammate(student);
+            btn.classList.add('added');
+            btn.textContent = 'Added to team';
+            const rect = btn.getBoundingClientRect();
+            if (window.MindMeshToast){
+              window.MindMeshToast.burst(rect.left + rect.width / 2, rect.top);
+              window.MindMeshToast.show(student.name.split(' ')[0] + ' added to your team', { type: 'success' });
+            }
+          });
+          matchesEl.appendChild(card);
+        });
+      } else {
+        matchesEl.innerHTML = `
+          <div style="grid-column:1/-1;padding:32px;text-align:center;background:#fff;border-radius:14px;border:1px solid var(--line);">
+            <div style="font-size:32px;margin-bottom:10px;">🌱</div>
+            <div style="font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:700;margin-bottom:6px;">You are the pioneer node on your campus!</div>
+            <p style="font-size:13.5px;color:var(--ink-soft);max-width:440px;margin:0 auto 16px;">As other students map their profiles, MindMesh AI will automatically calculate synergy scores and connect you to complementary builders.</p>
+            <a href="dashboard.html" class="btn-primary" style="display:inline-flex;text-decoration:none;padding:10px 20px;">Open Student Dashboard →</a>
+          </div>`;
+      }
     } else {
       matches.forEach((m, idx) => {
         const card = document.createElement('div');
@@ -1096,6 +1146,7 @@ import { isCloudReady, getMyUid, saveProfileCloud, loadAllProfilesCloud, addTeam
           ? `<img src="${m.student.photo}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`
           : MindMesh.initials(m.student.name);
 
+        const alreadyOnTeam = profile.team && profile.team[m.student.uid];
         card.innerHTML = `
           <div class="top">
             <div class="who">
@@ -1108,9 +1159,13 @@ import { isCloudReady, getMyUid, saveProfileCloud, loadAllProfilesCloud, addTeam
             <span class="match-score">${m.score}%</span>
           </div>
           <div class="tag-row" style="color:var(--ink-soft);">${skillsTxt ? skillsTxt.split(' · ').map(s=>`<span style="background:var(--bg-alt);color:var(--ink-soft);">${MindMesh.escapeHtml(s)}</span>`).join('') : '<span style="background:var(--bg-alt);color:var(--ink-soft);">Campus Node</span>'}</div>
-          <button type="button" class="select-team-btn" data-uid="${m.student.uid}">Add to my team</button>`;
+          <div style="display:flex;gap:8px;margin-top:10px;align-items:center;">
+            <button type="button" class="select-team-btn${alreadyOnTeam ? ' added' : ''}" data-uid="${m.student.uid}" style="flex:1;margin-top:0;">${alreadyOnTeam ? 'Added to team' : 'Add to my team'}</button>
+            <a href="inbox.html?chat=${m.student.uid}" class="btn-outline" style="padding:8px 12px;border-radius:9px;font-size:12px;text-decoration:none;display:inline-flex;align-items:center;gap:4px;white-space:nowrap;">💬 Chat</a>
+          </div>`;
         const btn = card.querySelector('.select-team-btn');
         btn.addEventListener('click', async (e) => {
+          if (btn.classList.contains('added')) return;
           btn.disabled = true; btn.textContent = 'Adding…';
           await addTeammate(m.student);
           btn.classList.add('added');

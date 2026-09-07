@@ -74,8 +74,21 @@ const MindMesh = (function () {
     return Math.abs(h);
   }
 
+  function escapeHtml(s) {
+    if (s == null) return '';
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
   function initials(name) {
-    return name.split(' ').filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join('');
+    if (!name || typeof name !== 'string') return 'MM';
+    const parts = name.trim().split(/\s+/).filter(Boolean);
+    if (parts.length === 0) return 'MM';
+    return parts.slice(0, 2).map(w => w[0].toUpperCase()).join('');
   }
 
   function saveProfile(profile) {
@@ -157,7 +170,7 @@ const MindMesh = (function () {
 
   return {
     TECH_SKILLS, CREATIVE_SKILLS, INTERESTS, COLLEGES, CAMPUS_CLUBS, MOCK_STUDENTS, OPPORTUNITIES,
-    initials, saveProfile, loadProfile, defaultProfile, allSkills, mergePool,
+    escapeHtml, initials, saveProfile, loadProfile, defaultProfile, allSkills, mergePool,
     computeMatches, computeOpportunities, skillGrowth
   };
 })();

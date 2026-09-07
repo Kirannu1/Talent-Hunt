@@ -658,8 +658,6 @@ import { isCloudReady, loadMyProfileCloud, loadAllProfilesCloud, subscribeAllPro
 
     // if arriving from the Idea Generator, boost candidates whose skills
     // match the project's suggested stack, and show which idea this is for
-    let idea = null;
-    try { idea = JSON.parse(sessionStorage.getItem('mindmesh_idea_focus') || 'null'); } catch (e) {}
     const banner = document.getElementById('idea-focus-banner');
     if (idea){
       banner.style.display = 'block';

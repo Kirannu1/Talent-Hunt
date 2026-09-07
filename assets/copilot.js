@@ -21,20 +21,70 @@
     { label: '🛠️ Synthesizer', url: 'index.html#synthesizer', hint: 'AI 3-Person Team Builder' }
   ];
 
-  function matchIntent(query) {
+  async function matchIntent(query) {
     const q = (query || '').toLowerCase().trim();
+
+    // Fetch registered students from server or local cache
+    let registeredProfiles = [];
+    try {
+      const res = await fetch('/api/profiles');
+      const data = await res.json();
+      if (data && data.ok && Array.isArray(data.profiles)) {
+        registeredProfiles = data.profiles;
+      }
+    } catch (e) {}
+
+    const myProfile = JSON.parse(localStorage.getItem('mindmesh_profile') || '{}');
+    const others = registeredProfiles.filter(p => p && p.uid && p.uid !== myProfile.uid && p.name);
+
+    // 1. Direct inquiry for registered students or specific skills/colleges
+    const searchTerms = ['python', 'react', 'figma', 'design', 'ui/ux', 'ml', 'machine learning', 'pytorch', 'iot', 'arduino', 'fastapi', 'sql', 'easwari', 'srm', 'vit', 'who', 'find', 'coder', 'developer'];
+    const hasSearchTerm = searchTerms.some(term => q.includes(term));
+    const isTeammateSearch = (hasSearchTerm || q.includes('registered') || q.includes('available')) && !q.includes('inbox') && !q.includes('synthesizer') && !q.includes('profile builder');
+
+    if (isTeammateSearch && others.length > 0) {
+      const words = q.split(/\s+/).filter(w => w.length > 2);
+      const matched = others.filter(s => {
+        const skills = [...(s.tech || []), ...(s.creative || []), ...(s.interests || [])].map(sk => sk.toLowerCase());
+        const name = (s.name || '').toLowerCase();
+        const college = (s.college || '').toLowerCase();
+        const branch = (s.branch || '').toLowerCase();
+        return words.some(w => skills.some(sk => sk.includes(w)) || name.includes(w) || college.includes(w) || branch.includes(w));
+      });
+
+      const displayList = (matched.length > 0 ? matched : others).slice(0, 3);
+      const studentCards = displayList.map(s => {
+        const skillsSnippet = [...(s.tech || []), ...(s.creative || [])].slice(0, 3).join(', ');
+        return `
+          <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:10px;padding:10px 12px;margin:8px 0;display:flex;align-items:center;justify-content:space-between;gap:8px;">
+            <div style="min-width:0;flex:1;">
+              <b style="font-size:13px;color:#fff;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(s.name)}</b>
+              <div style="font-size:11px;color:#A4ACB8;margin-top:2px;">🏛️ ${escapeHtml(s.college ? s.college.split(' ')[0] : 'Campus')} ${s.year ? '· ' + escapeHtml(s.year) : ''}</div>
+              <div style="font-size:10.5px;color:var(--amber);margin-top:2px;">${escapeHtml(skillsSnippet || 'Verified Node')}</div>
+            </div>
+            <a href="inbox.html?chat=${encodeURIComponent(s.uid)}" class="copilot-action-btn" style="margin-top:0;padding:6px 12px;font-size:11px;flex:none;white-space:nowrap;">💬 Message</a>
+          </div>
+        `;
+      }).join('');
+
+      return {
+        text: `🎯 **Found ${matched.length > 0 ? matched.length : others.length} registered candidate${(matched.length > 0 ? matched.length : others.length) === 1 ? '' : 's'}** matching your inquiry:\n${studentCards}\nClick **Message** to open an instant live chat thread, or view all students in your dashboard!`,
+        actionText: "View Available Teammates Slot →",
+        actionUrl: "dashboard.html"
+      };
+    }
 
     if (q.includes('inbox') || q.includes('message') || q.includes('chat') || q.includes('text') || q.includes('dm') || q.includes('talk') || q.includes('conversation')) {
       return {
-        text: "Opening your **Direct Inbox**! 💬\n\nHere you can text your selected teammates in real time, check unread replies, and coordinate your hackathon sprint plans. Real teammates will receive your messages directly on the website.",
+        text: "Opening your **Direct Messaging Inbox**! 💬\n\n• Chat with selected teammates in real-time\n• Receive instant chime & push notifications\n• Icebreaker starters for SIH 2026 and UI reviews\n• Zero glitch, in-place reply flow",
         actionText: "Open Direct Inbox →",
         actionUrl: "inbox.html"
       };
     }
 
-    if (q.includes('profile') || q.includes('id card') || q.includes('roll') || q.includes('usn') || q.includes('photo') || q.includes('badge') || q.includes('college') || q.includes('easwari') || q.includes('srm') || q.includes('vit') || q.includes('branch')) {
+    if (q.includes('profile') || q.includes('id card') || q.includes('roll') || q.includes('usn') || q.includes('photo') || q.includes('badge') || q.includes('college') || q.includes('branch')) {
       return {
-        text: "Taking you to the **Digital Profile Builder**! 🚀\n\nCraft your 3D holographic Student ID, select your engineering college, pick your core dev & design skills, and generate your live node on the campus talent graph.",
+        text: "Taking you to the **Digital Profile Builder**! 🚀\n\n• Holographic 3D Student ID card\n• College selection (Easwari, SRM, VIT, RVCE, etc.)\n• Verified technical & creative skill tags\n• Live photo upload & real-time campus mapping",
         actionText: "Go to Profile Builder →",
         actionUrl: "profile.html"
       };
@@ -48,39 +98,39 @@
       };
     }
 
-    if (q.includes('mesh') || q.includes('graph') || q.includes('network') || q.includes('node') || q.includes('visualize') || q.includes('cluster')) {
+    if (q.includes('synthesizer') || q.includes('synthesize') || q.includes('custom project') || q.includes('auto team') || q.includes('trio') || q.includes('form team')) {
       return {
-        text: "Visualizing the **Interactive Campus Talent Mesh**! 🕸️\n\nExplore live student nodes connected by shared frameworks, complementary skills, and college clusters powered by real-time force physics.",
-        actionText: "View Interactive Mesh →",
-        actionUrl: "dashboard.html#mesh-graph"
-      };
-    }
-
-    if (q.includes('synthesizer') || q.includes('synthesize') || q.includes('auto team') || q.includes('trio') || q.includes('3-person') || q.includes('form team')) {
-      return {
-        text: "⚡ **AI Team Synthesizer Studio**:\n\nOur matchmaking engine automatically balances 3-person hackathon teams combining **1 ML/Backend Engineer + 1 React Full-Stack Builder + 1 UI/UX Product Designer** to eliminate skill blind spots.",
+        text: "⚡ **AI Team Synthesizer Studio**:\n\nOur matching engine scans all registered students to synthesize an optimal, complementary squad:\n\n• **Extra Real-World Missions**: SIH Cyber Defense, Rural MedTech, Web3 FinTech, AgriBot IoT\n• **Custom Projects**: Add your own project mission & stack\n• **Real Teammates**: Real registered nodes assigned to complementary roles",
         actionText: "Launch Team Synthesizer →",
         actionUrl: "index.html#synthesizer"
       };
     }
 
-    if (q.includes('hackathon') || q.includes('sih') || q.includes('smart india') || q.includes('hacknorth') || q.includes('devfest') || q.includes('competition') || q.includes('event')) {
+    if (q.includes('available') || q.includes('available teammates') || q.includes('other students')) {
       return {
-        text: "🏆 **Upcoming Campus & National Hackathons**:\n\n• **Smart India Hackathon (SIH 2026)** — National tier, Software & Hardware editions\n• **HackNorth AI 2026** — Generative AI & Autonomous Agent track\n• **Campus DevFest Hack** — Web3, Full-Stack & IoT tracks\n\nNeed teammates before the deadline?",
-        actionText: "Explore Hackathons →",
-        actionUrl: "index.html#hackathons"
+        text: "👥 **Available Teammates Slot**:\n\nEven when AI complementary matching is calculating, you can explore **all registered students** who have built their profiles! Filter by college, branch, or technology, and add builders directly to your squad.",
+        actionText: "View Available Teammates →",
+        actionUrl: "dashboard.html"
       };
     }
 
-    if (q.includes('idea') || q.includes('project') || q.includes('problem') || q.includes('statement') || q.includes('what to build') || q.includes('build')) {
+    if (q.includes('hackathon') || q.includes('sih') || q.includes('smart india') || q.includes('hacknorth') || q.includes('competition')) {
       return {
-        text: "💡 Top trending hackathon problems this term:\n\n1. **Campus Bus ETA & GPS Predictor** (Python, FastAPI, Live WebSockets)\n2. **Smart Attendance & Defaulter Intelligence** (Face/QR embeddings + automated alerts)\n3. **Peer Skill Barter Platform** (React, Supabase, Escrow logic)\n\nWant full architecture breakdowns?",
+        text: "🏆 **Smart India Hackathon (SIH 2026) Winning Formula**:\n\n1. **Team Size**: Exactly 6 members (mandatory: at least 1 female teammate)\n2. **Optimal Squad Synergy**:\n   • 2 Backend / ML Engineers (Python, FastAPI, SQL)\n   • 2 Frontend / Mobile Developers (React, Flutter)\n   • 1 UI/UX Product Designer (Figma, Design Systems)\n   • 1 Domain Specialist / Pitch Presenter\n3. **Deliverables**: Live prototype + measurable impact architecture\n\nNeed to complete your SIH team right now?",
+        actionText: "Synthesize SIH Squad →",
+        actionUrl: "index.html#synthesizer"
+      };
+    }
+
+    if (q.includes('idea') || q.includes('project') || q.includes('problem') || q.includes('what to build')) {
+      return {
+        text: "💡 **Trending Hackathon Problem Statements**:\n\n1. **Smart Attendance & Defaulter Intelligence** (AI + QR embeddings)\n2. **SIH 2026 Cyber Threat Intelligence** (FastAPI, Anomaly Detection)\n3. **PulseAI Rural Triage Companion** (Offline-first Computer Vision)\n4. **MealQueue Smart Canteen Wait Predictor** (Live WebSockets)\n\nWant complete technical architectures?",
         actionText: "Open Project Idea Studio →",
         actionUrl: "ideas.html"
       };
     }
 
-    if (q.includes('synergy') || q.includes('algorithm') || q.includes('how does it work') || q.includes('jaccard') || q.includes('score')) {
+    if (q.includes('synergy') || q.includes('algorithm') || q.includes('jaccard') || q.includes('score')) {
       return {
         text: "🎯 **How MindMesh Synergy Works**:\n\nOur matchmaker combines **Jaccard skill complementarity** with domain coverage weights. If you are an ML developer, matching with a UI/UX designer and frontend engineer yields **97% squad synergy** because you achieve full design-to-deployment capability!",
         actionText: "See Skill Roadmap →",
@@ -96,16 +146,16 @@
       };
     }
 
-    if (q.includes('dashboard') || q.includes('match') || q.includes('search') || q.includes('find') || q.includes('explore')) {
+    if (q.includes('dashboard') || q.includes('match') || q.includes('search') || q.includes('find')) {
       return {
-        text: "Navigating to your **Campus Matchmaking Dashboard**! ⚡\n\nFilter students by college, search by framework (PyTorch, Figma, React, Flutter), inspect compatibility vectors, and click 'Add to my team'!",
+        text: "Navigating to your **Campus Matchmaking Dashboard**! ⚡\n\n• Dual slot switching: **AI Matches** & **Available Teammates**\n• Search by college, branch, or verified framework\n• One-click squad additions with celebratory confetti",
         actionText: "Explore Dashboard Matches →",
         actionUrl: "dashboard.html"
       };
     }
 
     return {
-      text: "👋 I'm **MeshAI**, your campus talent copilot! I know every corner of MindMesh. I can navigate you to:\n\n• **Profile Builder**: create your 3D Student ID\n• **Direct Inbox**: message your squad\n• **My Team**: review squad synergy & roster\n• **Mesh Graph**: view connected student nodes\n• **Project Ideas**: brainstorm hackathon concepts",
+      text: "👋 I'm **MeshAI**, your campus talent copilot! I can guide you through every part of MindMesh:\n\n• **AI Team Synthesizer**: form squads for SIH & custom projects\n• **Available Teammates**: discover all registered students\n• **Direct Messaging**: text teammates in real-time\n• **Profile Studio**: build your 3D Student ID\n• **Idea Studio**: explore 20+ hackathon architectures",
       actionText: "Take Me to Dashboard →",
       actionUrl: "dashboard.html"
     };
@@ -162,16 +212,18 @@
 
         <!-- Dynamic Suggestion Chips -->
         <div class="copilot-chips" id="copilot-chips">
-          <button type="button" class="copilot-chip" data-query="take me to profile">👤 Build / Edit Profile</button>
-          <button type="button" class="copilot-chip" data-query="take me to inbox">💬 Open Direct Inbox</button>
-          <button type="button" class="copilot-chip" data-query="show my squad">👥 View My Squad</button>
-          <button type="button" class="copilot-chip" data-query="open talent mesh graph">🕸️ Talent Mesh Graph</button>
+          <button type="button" class="copilot-chip" data-query="synthesize team">⚡ Synthesize Team</button>
+          <button type="button" class="copilot-chip" data-query="available teammates">👥 Available Teammates</button>
+          <button type="button" class="copilot-chip" data-query="who knows python">🐍 Find Python Devs</button>
+          <button type="button" class="copilot-chip" data-query="who knows figma">🎨 Find UI/UX Designers</button>
+          <button type="button" class="copilot-chip" data-query="sih 2026 strategy">🏆 SIH 2026 Rules</button>
+          <button type="button" class="copilot-chip" data-query="open direct inbox">💬 Direct Inbox</button>
           <button type="button" class="copilot-chip" data-query="suggest hackathon project">💡 Project Ideas</button>
-          <button type="button" class="copilot-chip" data-query="find teammate for hacknorth">🚀 SIH / HackNorth Matches</button>
+          <button type="button" class="copilot-chip" data-query="take me to profile">👤 Build Profile</button>
         </div>
 
         <form class="copilot-input-row" id="copilot-form">
-          <input type="text" id="copilot-input" autocomplete="off">
+          <input type="text" id="copilot-input" autocomplete="off" placeholder="Ask MeshAI for teammates, navigation, SIH...">
           <button type="submit" id="copilot-send-btn" title="Send message">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
               <line x1="22" y1="2" x2="11" y2="13"></line>
@@ -220,7 +272,7 @@
       handleUserQuery(val);
     });
 
-    function handleUserQuery(userText) {
+    async function handleUserQuery(userText) {
       if (global.MindMeshSFX) global.MindMeshSFX.playClick();
 
       // Append user msg
@@ -237,7 +289,7 @@
       messagesEl.appendChild(typing);
       messagesEl.scrollTop = messagesEl.scrollHeight;
 
-      const resp = matchIntent(userText);
+      const resp = await matchIntent(userText);
 
       setTimeout(() => {
         typing.remove();

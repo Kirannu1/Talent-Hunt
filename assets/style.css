@@ -1313,9 +1313,11 @@ footer{padding:56px 0 40px;}
 }
 .squad-member-who{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
 .squad-member-who .av{
-  width:40px;height:40px;border-radius:50%;background:var(--violet);
+  width:42px;height:42px;border-radius:50%;background:var(--violet);
   display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:#fff;
+  overflow:hidden;flex:none;
 }
+.squad-member-who .av img{width:100%;height:100%;object-fit:cover;display:block;}
 .squad-member-who b{font-size:15px;display:block;}
 .squad-member-who span{font-size:12px;color:#8F97A3;}
 .squad-skills{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}

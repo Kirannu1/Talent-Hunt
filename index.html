@@ -245,14 +245,26 @@
 
     <div class="synthesizer-box reveal">
       <div class="synth-controls">
-        <div class="synth-field">
-          <label for="synth-project-select">1. Select Project Mission</label>
+        <div class="synth-field" style="flex:1.5;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+            <label for="synth-project-select" style="margin-bottom:0;">1. Select Project Mission</label>
+            <button type="button" id="btn-toggle-custom-project" style="background:transparent;border:none;color:var(--amber);font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;padding:0;display:inline-flex;align-items:center;gap:3px;">
+              <span>✨ + Add Your Own Project</span>
+            </button>
+          </div>
           <select id="synth-project-select">
             <option value="attendance">Smart Attendance & Defaulter Intelligence (AI + QR)</option>
             <option value="canteen">MealQueue — Smart Canteen & Live Wait Estimates</option>
             <option value="wellness">MindCheck — Peer Mental Wellness Companion</option>
             <option value="sustainability">GreenCampus — Waste & Energy IoT Monitor</option>
             <option value="lostfound">FoundIt — Image-Matching Lost & Found</option>
+            <!-- Extra Real-world Project Missions -->
+            <option value="sih_cyber">SIH 2026: Autonomous Threat Intelligence & Cyber Defense</option>
+            <option value="medtech">PulseAI — Rural Clinic Smart Diagnostic Companion & Triage</option>
+            <option value="fintech">CampusPay — Micro-Peer Settlements & Split Intelligence (Web3)</option>
+            <option value="edtech">EduAdaptive — Real-time Lecture Comprehension & Knowledge Graph</option>
+            <option value="robotics">AgriBot — Autonomous Crop Drone & Soil Health Telemetry</option>
+            <option value="__custom_action__">✨ + Create Custom Project Mission...</option>
           </select>
         </div>
 
@@ -268,6 +280,32 @@
         <button type="button" class="synth-btn" id="run-synthesizer-btn">
           <span>⚡ Synthesize Optimal Team</span>
         </button>
+      </div>
+
+      <!-- Custom Project Creation Panel -->
+      <div id="custom-project-panel" style="display:none;background:rgba(255,255,255,0.06);border:1px dashed rgba(255,255,255,0.25);border-radius:14px;padding:18px 22px;margin-top:16px;">
+        <div style="font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:700;color:#fff;margin-bottom:4px;display:flex;align-items:center;gap:6px;">
+          <span>🛠️ Define Your Custom Project Mission</span>
+        </div>
+        <p style="font-size:12.5px;color:#C6CBD3;margin-bottom:14px;">Enter your project challenge and target stack. MindMesh will scan registered student nodes to find the best complementary teammates.</p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-bottom:12px;">
+          <div>
+            <label style="display:block;font-size:11px;text-transform:uppercase;letter-spacing:0.04em;color:var(--amber);margin-bottom:5px;font-family:'JetBrains Mono',monospace;">Project Mission Title</label>
+            <input type="text" id="custom-proj-title" placeholder="e.g. Autonomous Campus Navigation Robot" style="width:100%;padding:9px 14px;border-radius:8px;border:1px solid rgba(255,255,255,0.18);background:#0f1319;color:#fff;font-size:13px;font-family:inherit;box-sizing:border-box;">
+          </div>
+          <div>
+            <label style="display:block;font-size:11px;text-transform:uppercase;letter-spacing:0.04em;color:var(--amber);margin-bottom:5px;font-family:'JetBrains Mono',monospace;">Required Skills & Stack (comma-separated)</label>
+            <input type="text" id="custom-proj-skills" placeholder="e.g. Python, PyTorch, React, UI/UX Design, Arduino" style="width:100%;padding:9px 14px;border-radius:8px;border:1px solid rgba(255,255,255,0.18);background:#0f1319;color:#fff;font-size:13px;font-family:inherit;box-sizing:border-box;">
+          </div>
+        </div>
+        <div style="margin-bottom:14px;">
+          <label style="display:block;font-size:11px;text-transform:uppercase;letter-spacing:0.04em;color:var(--amber);margin-bottom:5px;font-family:'JetBrains Mono',monospace;">Brief Challenge Summary (Optional)</label>
+          <input type="text" id="custom-proj-desc" placeholder="Brief problem statement or hackathon deliverable..." style="width:100%;padding:9px 14px;border-radius:8px;border:1px solid rgba(255,255,255,0.18);background:#0f1319;color:#fff;font-size:13px;font-family:inherit;box-sizing:border-box;">
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;">
+          <button type="button" id="btn-save-custom-project" class="synth-btn" style="padding:8px 20px;font-size:12.5px;">✓ Save & Select Mission</button>
+          <button type="button" id="btn-cancel-custom-project" style="background:transparent;border:1px solid rgba(255,255,255,0.2);color:#C6CBD3;border-radius:99px;padding:7px 16px;font-size:12px;cursor:pointer;font-family:inherit;">Cancel</button>
+        </div>
       </div>
 
       <!-- Radar Scanning Stage -->
@@ -513,11 +551,12 @@
   heroMesh.start();
 </script>
 <script type="module">
-import { addTeammate } from './assets/cloud.js';
+import { addTeammate, loadAllProfilesCloud, getMyUid } from './assets/cloud.js';
 
 const PRESET_MISSIONS = {
   attendance: {
     title: 'Smart Attendance & Defaulter Intelligence',
+    targetStack: ['Python', 'Machine Learning', 'SQL', 'React', 'UI/UX Design', 'FastAPI'],
     squad: [
       { name: 'Aran Rao', role: 'AI/ML & Core Backend', year: '3rd year · CS', skills: ['Python', 'Machine Learning', 'SQL'], uid: 'mock_kabir_anand' },
       { name: 'Meera Sharma', role: 'UI/UX & Product Design', year: '2nd year · Design', skills: ['Figma', 'UI/UX Design', 'Design Systems'], uid: 'mock_meera_sharma' },
@@ -528,6 +567,7 @@ const PRESET_MISSIONS = {
   },
   canteen: {
     title: 'MealQueue — Smart Canteen & Live Wait Estimates',
+    targetStack: ['React', 'Node.js', 'WebSockets', 'UI/UX Design', 'Figma', 'Android'],
     squad: [
       { name: 'Wei Chen', role: 'Full-Stack Web & Realtime', year: '3rd year · CS', skills: ['React', 'Node.js', 'WebSockets'], uid: 'mock_wei_chen' },
       { name: 'Meera Sharma', role: 'UI/UX & Mobile Interface', year: '2nd year · Design', skills: ['UI/UX Design', 'Figma', 'Prototyping'], uid: 'mock_meera_sharma' },
@@ -538,6 +578,7 @@ const PRESET_MISSIONS = {
   },
   wellness: {
     title: 'MindCheck — Peer Mental Wellness Companion',
+    targetStack: ['Python', 'Machine Learning', 'UI/UX Design', 'React', 'Figma', 'NLP'],
     squad: [
       { name: 'Aran Rao', role: 'NLP & Emotion Inference', year: '3rd year · CS', skills: ['Python', 'Machine Learning', 'Data Modeling'], uid: 'mock_kabir_anand' },
       { name: 'Meera Sharma', role: 'Empathetic UX & Interface', year: '2nd year · Design', skills: ['UI/UX Design', 'Illustration', 'Figma'], uid: 'mock_meera_sharma' },
@@ -548,6 +589,7 @@ const PRESET_MISSIONS = {
   },
   sustainability: {
     title: 'GreenCampus — Waste & Energy IoT Monitor',
+    targetStack: ['Arduino / IoT', 'C++', 'Robotics', 'Python', 'Machine Learning', 'React'],
     squad: [
       { name: 'Dev Patel', role: 'IoT Firmware & Sensors', year: '3rd year · ECE', skills: ['Arduino / IoT', 'C++', 'Robotics'], uid: 'mock_dev_patel' },
       { name: 'Aran Rao', role: 'Data Analytics & Modeling', year: '3rd year · CS', skills: ['Python', 'Data Science', 'Machine Learning'], uid: 'mock_kabir_anand' },
@@ -558,6 +600,7 @@ const PRESET_MISSIONS = {
   },
   lostfound: {
     title: 'FoundIt — Image-Matching Lost & Found',
+    targetStack: ['Python', 'PyTorch', 'Data Science', 'React', 'UI/UX Design', 'Figma'],
     squad: [
       { name: 'Aran Rao', role: 'Computer Vision & Embedding', year: '3rd year · CS', skills: ['Python', 'PyTorch', 'Data Science'], uid: 'mock_kabir_anand' },
       { name: 'Wei Chen', role: 'Full-Stack Web App', year: '3rd year · CS', skills: ['React', 'Node.js', 'JavaScript'], uid: 'mock_wei_chen' },
@@ -565,8 +608,182 @@ const PRESET_MISSIONS = {
       { name: 'Ananya Iyer', role: 'Campus Outreach & Verification', year: '1st year · Comm.', skills: ['Public Speaking', 'Copywriting'], uid: 'mock_ananya_iyer' }
     ],
     synergy: { 2: '95%', 3: '97%', 4: '99%' }
+  },
+  // Extra Real-world Project Missions
+  sih_cyber: {
+    title: 'SIH 2026: Autonomous Threat Intelligence & Cyber Defense',
+    targetStack: ['Python', 'FastAPI', 'Machine Learning', 'React', 'SQL', 'Docker'],
+    squad: [
+      { name: 'Aran Rao', role: 'Anomaly Detection & ML Models', year: '3rd year · CS', skills: ['Python', 'Machine Learning', 'FastAPI'], uid: 'mock_kabir_anand' },
+      { name: 'Wei Chen', role: 'SecOps Web Dashboard', year: '3rd year · CS', skills: ['React', 'Node.js', 'SQL'], uid: 'mock_wei_chen' },
+      { name: 'Dev Patel', role: 'Packet Sniffing & Network Agents', year: '3rd year · ECE', skills: ['C++', 'Python', 'Arduino / IoT'], uid: 'mock_dev_patel' },
+      { name: 'Meera Sharma', role: 'Cyber Threat UI & Heatmaps', year: '2nd year · Design', skills: ['UI/UX Design', 'Figma', 'Design Systems'], uid: 'mock_meera_sharma' }
+    ],
+    synergy: { 2: '96%', 3: '98%', 4: '99%' }
+  },
+  medtech: {
+    title: 'PulseAI — Rural Clinic Smart Diagnostic Companion & Triage',
+    targetStack: ['Python', 'PyTorch', 'Computer Vision', 'UI/UX Design', 'Figma', 'React'],
+    squad: [
+      { name: 'Aran Rao', role: 'Diagnostic Vision Model', year: '3rd year · CS', skills: ['Python', 'PyTorch', 'Data Science'], uid: 'mock_kabir_anand' },
+      { name: 'Meera Sharma', role: 'Clinical Triage Mobile UX', year: '2nd year · Design', skills: ['UI/UX Design', 'Figma', 'Graphic Design'], uid: 'mock_meera_sharma' },
+      { name: 'Priya Nair', role: 'Offline-First Tablet App', year: '2nd year · CS', skills: ['Android', 'Java', 'REST APIs'], uid: 'mock_priya_nair' },
+      { name: 'Ananya Iyer', role: 'Health Ministry Pilot & Ethics', year: '1st year · Comm.', skills: ['Public Speaking', 'Content Strategy'], uid: 'mock_ananya_iyer' }
+    ],
+    synergy: { 2: '95%', 3: '98%', 4: '99%' }
+  },
+  fintech: {
+    title: 'CampusPay — Micro-Peer Settlements & Split Intelligence (Web3)',
+    targetStack: ['React', 'Node.js', 'SQL', 'UI/UX Design', 'Figma', 'JavaScript'],
+    squad: [
+      { name: 'Wei Chen', role: 'Ledger Architecture & APIs', year: '3rd year · CS', skills: ['React', 'Node.js', 'SQL'], uid: 'mock_wei_chen' },
+      { name: 'Meera Sharma', role: 'Instant Pay UX & Receipt Flow', year: '2nd year · Design', skills: ['UI/UX Design', 'Figma', 'Prototyping'], uid: 'mock_meera_sharma' },
+      { name: 'Aran Rao', role: 'Expense Categorization ML', year: '3rd year · CS', skills: ['Python', 'Data Science', 'Machine Learning'], uid: 'mock_kabir_anand' },
+      { name: 'Ananya Iyer', role: 'Merchant Onboarding & Growth', year: '1st year · Comm.', skills: ['Copywriting', 'Public Speaking'], uid: 'mock_ananya_iyer' }
+    ],
+    synergy: { 2: '94%', 3: '97%', 4: '99%' }
+  },
+  edtech: {
+    title: 'EduAdaptive — Real-time Lecture Comprehension & Knowledge Graph',
+    targetStack: ['Python', 'Machine Learning', 'React', 'Figma', 'Data Science', 'SQL'],
+    squad: [
+      { name: 'Aran Rao', role: 'Knowledge Graph Extraction', year: '3rd year · CS', skills: ['Python', 'Machine Learning', 'Data Science'], uid: 'mock_kabir_anand' },
+      { name: 'Wei Chen', role: 'Interactive Lecture WebApp', year: '3rd year · CS', skills: ['React', 'Node.js', 'WebSockets'], uid: 'mock_wei_chen' },
+      { name: 'Meera Sharma', role: 'Student Study UX & Note Flows', year: '2nd year · Design', skills: ['UI/UX Design', 'Figma', 'Design Systems'], uid: 'mock_meera_sharma' },
+      { name: 'Ananya Iyer', role: 'Pedagogy & Faculty Relations', year: '1st year · Comm.', skills: ['Public Speaking', 'Content Strategy'], uid: 'mock_ananya_iyer' }
+    ],
+    synergy: { 2: '95%', 3: '97%', 4: '99%' }
+  },
+  robotics: {
+    title: 'AgriBot — Autonomous Crop Drone & Soil Health Telemetry',
+    targetStack: ['Arduino / IoT', 'C++', 'Robotics', 'Python', 'Machine Learning', 'React'],
+    squad: [
+      { name: 'Dev Patel', role: 'Drone Flight Controller & Telemetry', year: '3rd year · ECE', skills: ['Arduino / IoT', 'C++', 'Robotics'], uid: 'mock_dev_patel' },
+      { name: 'Aran Rao', role: 'Multispectral Crop Health ML', year: '3rd year · CS', skills: ['Python', 'PyTorch', 'Data Science'], uid: 'mock_kabir_anand' },
+      { name: 'Wei Chen', role: 'Ground Control Station WebApp', year: '3rd year · CS', skills: ['React', 'Node.js', 'SQL'], uid: 'mock_wei_chen' },
+      { name: 'Meera Sharma', role: 'Farmer UI & Visual Indicators', year: '2nd year · Design', skills: ['UI/UX Design', 'Figma', 'Illustration'], uid: 'mock_meera_sharma' }
+    ],
+    synergy: { 2: '96%', 3: '98%', 4: '99%' }
   }
 };
+
+// Custom projects storage helper
+function loadCustomProjects() {
+  try {
+    const raw = localStorage.getItem('mindmesh_custom_missions');
+    return raw ? JSON.parse(raw) : {};
+  } catch (e) {
+    return {};
+  }
+}
+
+function saveCustomProjects(obj) {
+  try {
+    localStorage.setItem('mindmesh_custom_missions', JSON.stringify(obj));
+  } catch (e) {}
+}
+
+const projectSelect = document.getElementById('synth-project-select');
+const customPanel = document.getElementById('custom-project-panel');
+const btnToggleCustom = document.getElementById('btn-toggle-custom-project');
+const btnSaveCustom = document.getElementById('btn-save-custom-project');
+const btnCancelCustom = document.getElementById('btn-cancel-custom-project');
+const customTitleInput = document.getElementById('custom-proj-title');
+const customSkillsInput = document.getElementById('custom-proj-skills');
+const customDescInput = document.getElementById('custom-proj-desc');
+
+// Populate saved custom missions into select
+function refreshProjectOptions(selectKeyToSet = null) {
+  const customMissions = loadCustomProjects();
+  // Remove existing custom options before the action option
+  Array.from(projectSelect.options).forEach(opt => {
+    if (opt.value.startsWith('cust_')) opt.remove();
+  });
+
+  const actionOpt = projectSelect.querySelector('option[value="__custom_action__"]');
+  Object.keys(customMissions).forEach(key => {
+    const m = customMissions[key];
+    const opt = document.createElement('option');
+    opt.value = key;
+    opt.textContent = `⭐ ${m.title}`;
+    if (actionOpt) {
+      projectSelect.insertBefore(opt, actionOpt);
+    } else {
+      projectSelect.appendChild(opt);
+    }
+  });
+
+  if (selectKeyToSet) {
+    projectSelect.value = selectKeyToSet;
+  }
+}
+
+refreshProjectOptions();
+
+if (btnToggleCustom) {
+  btnToggleCustom.addEventListener('click', () => {
+    const isShowing = customPanel.style.display === 'block';
+    customPanel.style.display = isShowing ? 'none' : 'block';
+    if (!isShowing) setTimeout(() => customTitleInput && customTitleInput.focus(), 100);
+  });
+}
+
+if (btnCancelCustom) {
+  btnCancelCustom.addEventListener('click', () => {
+    customPanel.style.display = 'none';
+  });
+}
+
+if (projectSelect) {
+  projectSelect.addEventListener('change', () => {
+    if (projectSelect.value === '__custom_action__') {
+      customPanel.style.display = 'block';
+      setTimeout(() => customTitleInput && customTitleInput.focus(), 100);
+    }
+  });
+}
+
+if (btnSaveCustom) {
+  btnSaveCustom.addEventListener('click', () => {
+    const title = (customTitleInput.value || '').trim();
+    const skillsRaw = (customSkillsInput.value || '').trim();
+    const desc = (customDescInput.value || '').trim();
+
+    if (!title) {
+      if (window.MindMeshToast) window.MindMeshToast.show('Please enter a project mission title!', { type: 'error' });
+      customTitleInput.focus();
+      return;
+    }
+
+    const skills = skillsRaw
+      ? skillsRaw.split(/[,·]+/).map(s => s.trim()).filter(Boolean)
+      : ['Python', 'React', 'UI/UX Design'];
+
+    const customKey = 'cust_' + Date.now();
+    const customObj = {
+      title,
+      targetStack: skills,
+      desc,
+      squad: [],
+      synergy: { 2: '96%', 3: '98%', 4: '99%' }
+    };
+
+    const saved = loadCustomProjects();
+    saved[customKey] = customObj;
+    saveCustomProjects(saved);
+
+    refreshProjectOptions(customKey);
+    customPanel.style.display = 'none';
+    customTitleInput.value = '';
+    customSkillsInput.value = '';
+    customDescInput.value = '';
+
+    if (window.MindMeshToast) {
+      window.MindMeshToast.show(`Mission "${title}" added! Ready to synthesize.`, { type: 'success' });
+    }
+    if (window.MindMeshSFX) window.MindMeshSFX.playChime();
+  });
+}
 
 let currentSynthesizedSquad = [];
 
@@ -578,11 +795,39 @@ const cardsGrid = document.getElementById('squad-cards-grid');
 const synergyEl = document.getElementById('synth-synergy-score');
 const addTeamBtn = document.getElementById('synth-add-team-btn');
 
+function assignSmartRole(student, targetStack) {
+  const allStudentSkills = [...(student.tech || []), ...(student.creative || [])];
+  const low = allStudentSkills.map(s => s.toLowerCase());
+
+  if (low.some(s => s.includes('ml') || s.includes('machine learning') || s.includes('pytorch') || s.includes('python') || s.includes('ai') || s.includes('data'))) {
+    return 'AI / ML Architect & Models';
+  }
+  if (low.some(s => s.includes('ui') || s.includes('ux') || s.includes('figma') || s.includes('design') || s.includes('prototype'))) {
+    return 'Product & UI/UX Designer';
+  }
+  if (low.some(s => s.includes('react') || s.includes('javascript') || s.includes('node') || s.includes('frontend') || s.includes('web'))) {
+    return 'Full-Stack Web & Interface';
+  }
+  if (low.some(s => s.includes('iot') || s.includes('arduino') || s.includes('robotics') || s.includes('c++') || s.includes('embedded'))) {
+    return 'Embedded IoT & Hardware';
+  }
+  if (low.some(s => s.includes('public') || s.includes('speaking') || s.includes('pitch') || s.includes('copywriting'))) {
+    return 'Product Strategy & Pitch Lead';
+  }
+  if (low.some(s => s.includes('sql') || s.includes('fastapi') || s.includes('cloud') || s.includes('docker') || s.includes('database'))) {
+    return 'Cloud Backend & Data Architecture';
+  }
+  return 'Core Systems & Logic Lead';
+}
+
 if (runBtn) {
-  runBtn.addEventListener('click', () => {
-    const projectKey = document.getElementById('synth-project-select').value;
+  runBtn.addEventListener('click', async () => {
+    const projectKey = projectSelect.value;
     const size = parseInt(document.getElementById('synth-size-select').value, 10);
-    const data = PRESET_MISSIONS[projectKey] || PRESET_MISSIONS.attendance;
+
+    const customMissions = loadCustomProjects();
+    const data = customMissions[projectKey] || PRESET_MISSIONS[projectKey] || PRESET_MISSIONS.attendance;
+    const targetStack = data.targetStack || ['Python', 'React', 'UI/UX Design', 'SQL'];
 
     runBtn.disabled = true;
     resultsStage.style.display = 'none';
@@ -591,10 +836,10 @@ if (runBtn) {
     if (window.MindMeshSFX) window.MindMeshSFX.playScan();
 
     const steps = [
-      { t: 0, text: 'SCANNING 12,400+ CAMPUS NODES...' },
-      { t: 400, text: 'ANALYZING COMPLEMENTARY SKILL VECTORS...' },
-      { t: 900, text: 'PAIRING CODING WITH DESIGN & PRODUCT LEADERSHIP...' },
-      { t: 1400, text: 'ELIMINATING BLIND SPOTS & MAXIMIZING SYNERGY...' }
+      { t: 0, text: 'SCANNING CAMPUS STUDENT NODES...' },
+      { t: 400, text: `EVALUATING REGISTERED TALENT FOR: ${data.title.toUpperCase()}...` },
+      { t: 900, text: 'CALCULATING COMPLEMENTARY ROLES & SKILL COVERAGE...' },
+      { t: 1400, text: 'SYNTHESIZING OPTIMAL SQUAD WITH ZERO SKILL BLIND SPOTS...' }
     ];
 
     steps.forEach(s => {
@@ -604,29 +849,88 @@ if (runBtn) {
       }, s.t);
     });
 
+    // Load actual registered students from Cloud & local store
+    let realCandidates = [];
+    try {
+      const allProfiles = await loadAllProfilesCloud();
+      const myUid = getMyUid();
+      realCandidates = (allProfiles || []).filter(p => p && p.uid && p.uid !== myUid && p.name);
+    } catch (err) {
+      console.warn('MindMesh: error loading registered candidates', err);
+    }
+
     setTimeout(() => {
       radarStage.style.display = 'none';
       resultsStage.style.display = 'block';
       runBtn.disabled = false;
 
-      currentSynthesizedSquad = data.squad.slice(0, size);
-      synergyEl.textContent = data.synergy[size] || '97%';
+      // Score candidates against project target stack
+      const scoredReal = realCandidates.map(student => {
+        const theirSkills = [...(student.tech || []), ...(student.creative || [])];
+        const matchCount = theirSkills.filter(s => targetStack.some(ts => ts.toLowerCase() === s.toLowerCase())).length;
+        const role = assignSmartRole(student, targetStack);
+        return {
+          uid: student.uid,
+          name: student.name,
+          college: student.college || 'Campus University',
+          year: student.year || (student.degree ? student.degree.split(' ')[0] : 'Student'),
+          photo: student.photo || null,
+          skills: theirSkills.slice(0, 4),
+          role,
+          matchScore: matchCount * 15 + (student.name.charCodeAt(0) % 10),
+          isReal: true
+        };
+      }).sort((a, b) => b.matchScore - a.matchScore);
+
+      // Desired squad composition: Pick real students first
+      let chosenSquad = scoredReal.slice(0, size);
+
+      // If fewer real students than squad size, backfill from preset squad candidates
+      if (chosenSquad.length < size && data.squad && data.squad.length) {
+        const needed = size - chosenSquad.length;
+        const fallbackCandidates = data.squad.filter(m => !chosenSquad.some(c => c.name === m.name));
+        chosenSquad = chosenSquad.concat(fallbackCandidates.slice(0, needed));
+      }
+
+      currentSynthesizedSquad = chosenSquad;
+      const synergyScores = { 2: '96%', 3: '98%', 4: '99%' };
+      synergyEl.textContent = synergyScores[size] || '98%';
 
       cardsGrid.innerHTML = currentSynthesizedSquad.map((m, idx) => `
-        <div class="squad-member-card" style="animation-delay:${idx * 0.1}s;">
-          <div class="squad-role-tag">${m.role}</div>
-          <div class="squad-member-who">
-            <div class="av" style="background:${idx % 2 === 0 ? 'var(--violet)' : 'var(--amber)'};">
-              ${MindMesh.initials(m.name)}
+        <div class="squad-member-card" style="animation-delay:${idx * 0.1}s;display:flex;flex-direction:column;justify-content:space-between;">
+          <div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:6px;flex-wrap:wrap;">
+              <span class="squad-role-tag" style="margin-bottom:0;">${m.role}</span>
+              ${m.isReal ? `
+                <span style="font-size:10.5px;font-family:'JetBrains Mono',monospace;font-weight:700;color:#3FA772;background:rgba(63,167,114,0.15);padding:2px 8px;border-radius:99px;display:inline-flex;align-items:center;gap:4px;">
+                  <span style="width:5px;height:5px;border-radius:50%;background:#3FA772;"></span> Registered Node
+                </span>
+              ` : ''}
             </div>
-            <div>
-              <b>${m.name}</b>
-              <span>${m.year}</span>
+
+            <div class="squad-member-who">
+              <div class="av" style="background:${idx % 2 === 0 ? 'var(--violet)' : 'var(--amber)'};">
+                ${m.photo ? `<img src="${m.photo}" alt="${MindMesh.escapeHtml(m.name)}">` : MindMesh.initials(m.name)}
+              </div>
+              <div>
+                <b>${MindMesh.escapeHtml(m.name)}</b>
+                <span>${MindMesh.escapeHtml(m.college ? m.college.split(' ')[0] : '')}${m.year ? ' · ' + MindMesh.escapeHtml(m.year) : ''}</span>
+              </div>
+            </div>
+
+            <div class="squad-skills">
+              ${(m.skills || []).map(s => `<span>${MindMesh.escapeHtml(s)}</span>`).join('')}
             </div>
           </div>
-          <div class="squad-skills">
-            ${m.skills.map(s => `<span>${s}</span>`).join('')}
-          </div>
+
+          ${m.uid ? `
+            <div style="margin-top:14px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.08);display:flex;justify-content:space-between;align-items:center;">
+              <a href="inbox.html?chat=${encodeURIComponent(m.uid)}" style="font-size:12px;color:var(--amber);text-decoration:none;font-weight:600;display:inline-flex;align-items:center;gap:4px;">
+                💬 Message
+              </a>
+              <span style="font-size:11px;color:#A4ACB8;">Fit: 98%</span>
+            </div>
+          ` : ''}
         </div>
       `).join('');
 
@@ -634,7 +938,7 @@ if (runBtn) {
       if (window.MindMeshToast) {
         const rect = runBtn.getBoundingClientRect();
         window.MindMeshToast.burst(rect.left + rect.width / 2, rect.top);
-        window.MindMeshToast.show(`Optimal ${size}-Person Squad Synthesized! 🚀`, { type: 'success' });
+        window.MindMeshToast.show(`Optimal ${size}-Person Squad Synthesized for ${data.title}! 🚀`, { type: 'success' });
       }
     }, 1700);
   });
@@ -649,9 +953,11 @@ if (addTeamBtn) {
       await addTeammate({
         uid: member.uid,
         name: member.name,
-        year: member.year,
-        tech: member.skills.filter(s => MindMesh.TECH_SKILLS.includes(s)),
-        creative: member.skills.filter(s => MindMesh.CREATIVE_SKILLS.includes(s))
+        college: member.college || '',
+        year: member.year || '',
+        photo: member.photo || null,
+        tech: (member.skills || []).filter(s => MindMesh.TECH_SKILLS.includes(s)),
+        creative: (member.skills || []).filter(s => MindMesh.CREATIVE_SKILLS.includes(s))
       });
     }
 

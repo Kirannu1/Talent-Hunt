@@ -632,10 +632,22 @@ import { isCloudReady, loadMyProfileCloud, loadAllProfilesCloud, subscribeAllPro
     availableSearchInput.addEventListener('input', (e) => renderAvailable(e.target.value));
   }
 
+  let lastMatchesDigest = '';
+
   function renderMatches(otherProfiles){
     const pool = MindMesh.mergePool(profile, otherProfiles);
     const realOthers = (otherProfiles || []).filter(p => !(profile.uid && p.uid === profile.uid));
     currentRealOthers = realOthers;
+
+    let idea = null;
+    try { idea = JSON.parse(sessionStorage.getItem('mindmesh_idea_focus') || 'null'); } catch (e) {}
+
+    const teamState = Object.keys(profile.team || {}).sort().join(',');
+    const digest = realOthers.map(s => s.uid + ':' + (s.updatedAt || 0)).join('|') + '::' + teamState + '::' + (idea ? idea.title : '');
+    if (digest === lastMatchesDigest) {
+      return; // Skip re-rendering to prevent blinking/refreshing
+    }
+    lastMatchesDigest = digest;
 
     peerCountEl.textContent = isCloudReady()
       ? `🟢 ${realOthers.length} other student${realOthers.length === 1 ? '' : 's'} mapped so far`

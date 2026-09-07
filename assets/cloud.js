@@ -279,21 +279,39 @@ export async function loadAllProfilesCloud() {
 }
 
 export function subscribeAllProfiles(callback) {
+  let lastProfilesFp = '';
+  function profilesFingerprint(profiles) {
+    if (!profiles) return '';
+    return profiles.map(p => (p.uid || '') + ':' + (p.name || '') + ':' + (p.photo ? '1' : '0') + ':' + (p.college || '') + ':' + (p.updatedAt || 0)).join(';');
+  }
+
   let unsubFirestore = () => {};
   if (cloudReady) {
     unsubFirestore = onSnapshot(
       collection(db, PROFILES_COLLECTION),
       () => {
-        loadAllProfilesCloud().then(callback);
+        loadAllProfilesCloud().then(profiles => {
+          const fp = profilesFingerprint(profiles);
+          if (fp !== lastProfilesFp) {
+            lastProfilesFp = fp;
+            callback(profiles);
+          }
+        });
       },
       err => console.error('MindMesh: live subscription failed', err)
     );
   }
 
-  // Also background poll local server every 3s so multi-device testing syncs automatically
+  // Background poll local server with deduplication
   const pollTimer = setInterval(() => {
-    loadAllProfilesCloud().then(callback);
-  }, 3000);
+    loadAllProfilesCloud().then(profiles => {
+      const fp = profilesFingerprint(profiles);
+      if (fp !== lastProfilesFp) {
+        lastProfilesFp = fp;
+        callback(profiles);
+      }
+    });
+  }, 3500);
 
   return function unsubscribe() {
     clearInterval(pollTimer);

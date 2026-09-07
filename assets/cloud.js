@@ -318,25 +318,41 @@ function getLocalMessages(threadId) {
   }
 }
 
-function saveLocalMessage(threadId, msg, otherUid) {
+function saveLocalMessage(threadId, msg, otherUid, customDetails) {
   const msgs = getLocalMessages(threadId);
-  msgs.push(msg);
-  try {
-    localStorage.setItem('mm_msgs_' + threadId, JSON.stringify(msgs));
-  } catch (e) {}
+  const exists = msgs.some(m => m.id === msg.id);
+  if (!exists) {
+    msgs.push(msg);
+    try {
+      localStorage.setItem('mm_msgs_' + threadId, JSON.stringify(msgs));
+    } catch (e) {}
+  }
 
   // Update thread directory in local storage
   const threads = getLocalThreads();
   const myUid = getMyUid();
   const existingIdx = threads.findIndex(t => t.id === threadId);
+  
+  const myProfile = JSON.parse(localStorage.getItem(LOCAL_KEY) || '{}');
+  const myName = (cachedUser && cachedUser.displayName) || myProfile.name || 'Student';
+  const myPhoto = (cachedUser && cachedUser.photoURL) || myProfile.photo || null;
+  const myCollege = myProfile.college || '';
+
   const threadObj = {
     id: threadId,
     participants: [myUid, otherUid],
+    participantDetails: {
+      [myUid]: { name: myName, photo: myPhoto, college: myCollege },
+      ...(customDetails ? { [otherUid]: customDetails } : {})
+    },
     updatedAt: msg.createdAt,
     lastMessage: msg
   };
+
   if (existingIdx >= 0) {
-    threads[existingIdx] = threadObj;
+    threads[existingIdx] = Object.assign({}, threads[existingIdx], threadObj, {
+      participantDetails: Object.assign({}, threads[existingIdx].participantDetails || {}, threadObj.participantDetails)
+    });
   } else {
     threads.unshift(threadObj);
   }
@@ -426,80 +442,134 @@ export async function sendMessage(otherUid, text) {
   const myUid = getMyUid();
   const threadId = threadIdFor(myUid, otherUid);
   const clean = text.trim();
+
+  // Resolve sender info
+  const myProfile = JSON.parse(localStorage.getItem(LOCAL_KEY) || '{}');
+  const senderName = (cachedUser && cachedUser.displayName) || myProfile.name || 'Student';
+  const senderPhoto = (cachedUser && cachedUser.photoURL) || myProfile.photo || null;
+  const senderCollege = myProfile.college || '';
+
+  // Resolve recipient info
+  let targetName = 'Teammate';
+  let targetPhoto = null;
+  let targetCollege = '';
+  if (myProfile.team && myProfile.team[otherUid]) {
+    targetName = myProfile.team[otherUid].name || targetName;
+    targetPhoto = myProfile.team[otherUid].photo || null;
+    targetCollege = myProfile.team[otherUid].college || '';
+  } else if (typeof MindMesh !== 'undefined' && MindMesh.MOCK_STUDENTS) {
+    const found = MindMesh.MOCK_STUDENTS.find(s => s.uid === otherUid);
+    if (found) {
+      targetName = found.name;
+      targetPhoto = found.photo || null;
+      targetCollege = found.college || '';
+    }
+  }
+
+  const customTargetDetails = { name: targetName, photo: targetPhoto, college: targetCollege };
+
   const userMsg = {
     id: 'msg_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+    threadId,
     from: myUid,
+    to: otherUid,
+    senderName,
+    senderPhoto,
+    senderCollege,
     text: clean,
     createdAt: Date.now()
   };
 
   // 1. Immediate local save & update
-  saveLocalMessage(threadId, userMsg, otherUid);
+  saveLocalMessage(threadId, userMsg, otherUid, customTargetDetails);
 
-  // 2. Cloud Firestore save if available
+  // 2. Sync to local backend API if available
+  if (typeof fetch !== 'undefined') {
+    fetch('/api/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(userMsg)
+    }).catch(() => {});
+  }
+
+  // 3. Cloud Firestore save if available
   if (cloudReady) {
     try {
       await setDoc(doc(db, 'mindmesh_threads', threadId), {
+        id: threadId,
         participants: [myUid, otherUid],
+        participantDetails: {
+          [myUid]: { name: senderName, photo: senderPhoto, college: senderCollege },
+          [otherUid]: customTargetDetails
+        },
         updatedAt: Date.now(),
-        lastMessage: { text: clean, from: myUid, createdAt: Date.now() }
+        lastMessage: userMsg
       }, { merge: true });
-      await addDoc(collection(db, 'mindmesh_threads', threadId, 'messages'), {
-        from: myUid, text: clean, createdAt: Date.now()
-      });
+      await addDoc(collection(db, 'mindmesh_threads', threadId, 'messages'), userMsg);
     } catch (err) {
       console.warn('MindMesh: Firestore send message warning (using local delivery)', err);
     }
   }
 
-  // 3. Realistic Teammate Receipt & Auto-Reply
-  // If messaging a teammate, simulate actual receipt and reply after 1.5s
-  setTimeout(() => {
-    const replyText = generateTeammateReply(otherUid, clean);
-    const replyMsg = {
-      id: 'msg_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
-      from: otherUid,
-      text: replyText,
-      createdAt: Date.now()
-    };
+  // 4. Teammate Receipt & Auto-Reply:
+  // ONLY simulate replies if messaging a built-in mock bot student!
+  // Real registered users will receive the actual message in their inbox on the website.
+  const isMockStudent = otherUid.startsWith('s1_') || otherUid.startsWith('s2_') ||
+                        otherUid.startsWith('s3_') || otherUid.startsWith('s4_') ||
+                        otherUid.startsWith('s5_') || otherUid.startsWith('s6_') ||
+                        otherUid.startsWith('mock_');
 
-    saveLocalMessage(threadId, replyMsg, otherUid);
+  if (isMockStudent) {
+    setTimeout(() => {
+      const replyText = generateTeammateReply(otherUid, clean);
+      const replyMsg = {
+        id: 'msg_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+        threadId,
+        from: otherUid,
+        to: myUid,
+        senderName: targetName,
+        senderPhoto: targetPhoto,
+        senderCollege: targetCollege,
+        text: replyText,
+        createdAt: Date.now()
+      };
 
-    // If cloud ready, persist reply too
-    if (cloudReady) {
-      setDoc(doc(db, 'mindmesh_threads', threadId), {
-        participants: [myUid, otherUid],
-        updatedAt: Date.now(),
-        lastMessage: replyMsg
-      }, { merge: true }).catch(() => {});
-      addDoc(collection(db, 'mindmesh_threads', threadId, 'messages'), replyMsg).catch(() => {});
-    }
+      saveLocalMessage(threadId, replyMsg, otherUid, customTargetDetails);
 
-    // Audio & Toast notification of received reply
-    if (typeof window !== 'undefined') {
-      if (window.MindMeshSFX) window.MindMeshSFX.playChime();
-      if (window.MindMeshToast) {
-        // Resolve person name
-        let senderName = 'Teammate';
-        const teamObj = JSON.parse(localStorage.getItem(LOCAL_KEY) || '{}').team || {};
-        if (teamObj[otherUid]) senderName = teamObj[otherUid].name;
-        else if (otherUid.includes('meera')) senderName = 'Meera Sharma';
-        else if (otherUid.includes('kabir')) senderName = 'Kabir Anand';
-        else if (otherUid.includes('wei')) senderName = 'Wei Chen';
-        else if (otherUid.includes('dev')) senderName = 'Dev Patel';
-        else if (otherUid.includes('ananya')) senderName = 'Ananya Iyer';
-
-        window.MindMeshToast.show(`💬 ${senderName}: "${replyText.slice(0, 48)}..."`, { type: 'info' });
+      if (typeof fetch !== 'undefined') {
+        fetch('/api/messages', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(replyMsg)
+        }).catch(() => {});
       }
 
-      // Update inbox badge in nav
-      const badge = document.getElementById('nav-inbox-badge');
-      if (badge) {
-        badge.style.display = 'inline-flex';
-        badge.textContent = '1';
+      // If cloud ready, persist reply too
+      if (cloudReady) {
+        setDoc(doc(db, 'mindmesh_threads', threadId), {
+          participants: [myUid, otherUid],
+          updatedAt: Date.now(),
+          lastMessage: replyMsg
+        }, { merge: true }).catch(() => {});
+        addDoc(collection(db, 'mindmesh_threads', threadId, 'messages'), replyMsg).catch(() => {});
       }
-    }
-  }, 1600);
+
+      // Audio & Toast notification of received reply
+      if (typeof window !== 'undefined') {
+        if (window.MindMeshSFX) window.MindMeshSFX.playChime();
+        if (window.MindMeshToast) {
+          window.MindMeshToast.show(`💬 ${targetName}: "${replyText.slice(0, 48)}..."`, { type: 'info' });
+        }
+
+        // Update inbox badge in nav
+        const badge = document.getElementById('nav-inbox-badge');
+        if (badge) {
+          badge.style.display = 'inline-flex';
+          badge.textContent = '1';
+        }
+      }
+    }, 1500);
+  }
 
   return { ok: true };
 }
@@ -514,6 +584,32 @@ export function subscribeThread(otherUid, callback) {
   // Deliver initial local messages immediately
   const localMsgs = getLocalMessages(threadId);
   callback(localMsgs);
+
+  // Local server poll for multi-browser sync
+  const pollInterval = setInterval(() => {
+    if (typeof fetch !== 'undefined') {
+      fetch(`/api/messages?threadId=${encodeURIComponent(threadId)}`)
+        .then(r => r.json())
+        .then(data => {
+          if (data && data.ok && Array.isArray(data.messages) && data.messages.length > 0) {
+            const currentMsgs = getLocalMessages(threadId);
+            let hasNew = false;
+            data.messages.forEach(m => {
+              if (!currentMsgs.some(c => c.id === m.id)) {
+                currentMsgs.push(m);
+                hasNew = true;
+              }
+            });
+            if (hasNew) {
+              currentMsgs.sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
+              try { localStorage.setItem('mm_msgs_' + threadId, JSON.stringify(currentMsgs)); } catch (e) {}
+              callback(currentMsgs);
+            }
+          }
+        })
+        .catch(() => {});
+    }
+  }, 2500);
 
   let unsubCloud = () => {};
   if (cloudReady) {
@@ -533,6 +629,7 @@ export function subscribeThread(otherUid, callback) {
   }
 
   return function unsubscribe() {
+    clearInterval(pollInterval);
     if (threadSubscribers[threadId]) threadSubscribers[threadId].delete(callback);
     unsubCloud();
   };
@@ -549,23 +646,33 @@ function getLocalThreads() {
 
 export async function listMyThreads() {
   const localThreads = getLocalThreads();
-  if (!cloudReady) return localThreads;
+  const myUid = getMyUid();
+  const map = {};
+  localThreads.forEach(t => { map[t.id] = t; });
+
+  // Try fetching from local server API
   try {
-    const myUid = getMyUid();
-    const q = query(collection(db, 'mindmesh_threads'), where('participants', 'array-contains', myUid));
-    const snap = await getDocs(q);
-    const cloudThreads = snap.docs.map(d => Object.assign({ id: d.id }, d.data()));
-    
-    // Merge cloud + local threads
-    const map = {};
-    localThreads.forEach(t => { map[t.id] = t; });
-    cloudThreads.forEach(t => { map[t.id] = t; });
-    const merged = Object.values(map);
-    merged.sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
-    return merged;
-  } catch (err) {
-    return localThreads;
+    const res = await fetch(`/api/threads?uid=${encodeURIComponent(myUid)}`);
+    const data = await res.json();
+    if (data && data.ok && Array.isArray(data.threads)) {
+      data.threads.forEach(t => { map[t.id] = Object.assign({}, map[t.id] || {}, t); });
+    }
+  } catch (e) {}
+
+  if (cloudReady) {
+    try {
+      const q = query(collection(db, 'mindmesh_threads'), where('participants', 'array-contains', myUid));
+      const snap = await getDocs(q);
+      const cloudThreads = snap.docs.map(d => Object.assign({ id: d.id }, d.data()));
+      cloudThreads.forEach(t => { map[t.id] = Object.assign({}, map[t.id] || {}, t); });
+    } catch (err) {
+      console.warn('MindMesh: listMyThreads cloud warning', err);
+    }
   }
+
+  const merged = Object.values(map);
+  merged.sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
+  return merged;
 }
 
 export function subscribeMyThreads(callback) {

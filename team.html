@@ -146,14 +146,17 @@ import { isCloudReady, getMyUid, loadMyProfileCloud, removeTeammate, sendMessage
         <button type="button" class="remove-teammate">Remove</button>
       </div>
       <div class="tag-row">${skillsTxt.map(s=>`<span style="background:var(--bg-alt);color:var(--ink-soft);">${s}</span>`).join('') || '<span style="background:var(--bg-alt);color:var(--ink-soft);">No listed skills</span>'}</div>
-      <button type="button" class="msg-toggle-btn">💬 Message ${mate.name.split(' ')[0]}</button>
+      <div style="display:flex;gap:8px;align-items:center;margin-top:10px;">
+        <button type="button" class="msg-toggle-btn" style="flex:1;">💬 Message ${mate.name.split(' ')[0]}</button>
+        <a href="inbox.html?chat=${mate.uid}" class="open-inbox-link" style="text-decoration:none;padding:7px 12px;border:1px solid var(--line);border-radius:10px;font-size:12px;font-weight:600;color:var(--violet);display:inline-flex;align-items:center;gap:4px;background:#fff;white-space:nowrap;">Inbox ↗</a>
+      </div>
       <div class="chat-panel">
         <div class="chat-messages"><div class="chat-empty">Say hi 👋</div></div>
         <div class="chat-typing-row" id="typing-${mate.uid}" style="display:none;font-size:11.5px;color:var(--violet);margin:4px 0 6px 12px;font-weight:600;">
           <span class="copilot-dot"></span> ${mate.name.split(' ')[0]} is typing…
         </div>
         <div class="chat-input-row">
-          <input type="text" placeholder="Write a message to ${mate.name.split(' ')[0]}…" maxlength="500">
+          <input type="text" autocomplete="off" maxlength="500">
           <button type="button">Send</button>
         </div>
       </div>`;
@@ -220,9 +223,12 @@ import { isCloudReady, getMyUid, loadMyProfileCloud, removeTeammate, sendMessage
       chatInput.value = '';
       if (window.MindMeshSFX) window.MindMeshSFX.playClick();
       await sendMessage(mate.uid, text);
+      if (window.MindMeshToast) {
+        window.MindMeshToast.show(`✓ Sent to ${mate.name.split(' ')[0]}! Synced to Inbox.`, { type: 'success' });
+      }
 
-      // Show typing indicator for incoming reply
-      if (typingIndicator) {
+      // Show typing indicator for incoming reply if mock bot
+      if (typingIndicator && (mate.uid.startsWith('s1_') || mate.uid.startsWith('s2_') || mate.uid.startsWith('s3_') || mate.uid.startsWith('mock_'))) {
         setTimeout(() => {
           typingIndicator.style.display = 'block';
           chatMessages.scrollTop = chatMessages.scrollHeight;

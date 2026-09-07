@@ -77,18 +77,22 @@ import {
 
 (async function(){
   await whenAuthReady();
-  // Hybrid messaging works locally and seamlessly syncs to cloud
   const container = document.getElementById('inbox-container');
   const myUid = getMyUid();
+  const myProfile = JSON.parse(localStorage.getItem('mindmesh_profile') || '{}');
+  const squad = (myProfile && myProfile.team) ? Object.values(myProfile.team) : [];
 
-  // uid -> {name, photo} lookup, built from real profiles + the mock roster
+  // uid -> {name, photo, college} lookup, built from real profiles + squad + mock roster
   const directory = {};
   (MindMesh.MOCK_STUDENTS || []).forEach(s => { directory[s.uid] = s; });
+  squad.forEach(s => { directory[s.uid] = s; });
   if (isCloudReady()){
     (await loadAllProfilesCloud()).forEach(p => { directory[p.uid] = p; });
   }
 
   const openThreads = {}; // otherUid -> unsubscribe fn for its message stream
+  const urlParams = new URLSearchParams(window.location.search);
+  const autoChatUid = urlParams.get('chat');
 
   function escapeHtml(s){
     const d = document.createElement('div');
@@ -107,13 +111,92 @@ import {
     return Math.floor(hrs / 24) + 'd ago';
   }
 
+  // Render top Squad Quick-Chat Bar
+  function renderSquadBar() {
+    let squadBar = document.getElementById('squad-quick-chat-bar');
+    if (!squadBar) {
+      squadBar = document.createElement('div');
+      squadBar.id = 'squad-quick-chat-bar';
+      squadBar.style.cssText = 'background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px 20px;margin-bottom:24px;box-shadow:0 4px 16px rgba(18,22,28,0.03);';
+      container.parentNode.insertBefore(squadBar, container);
+    }
+
+    if (squad.length === 0) {
+      squadBar.innerHTML = `
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+          <div>
+            <b style="font-size:14px;color:var(--ink);">Squad Direct Messaging</b>
+            <div style="font-size:12px;color:var(--ink-soft);margin-top:2px;">Add teammates from your dashboard to text them directly.</div>
+          </div>
+          <a href="dashboard.html" class="btn-outline" style="padding:7px 14px;font-size:12px;text-decoration:none;border-radius:99px;">Find Teammates →</a>
+        </div>`;
+      return;
+    }
+
+    squadBar.innerHTML = `
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#3FA772;box-shadow:0 0 8px #3FA772;"></span>
+          <b style="font-size:14px;color:var(--ink);">Message Your Selected Squad (${squad.length} teammates)</b>
+        </div>
+        <a href="team.html" style="font-size:12px;color:var(--violet);font-weight:600;text-decoration:none;">Manage Squad →</a>
+      </div>
+      <div style="display:flex;gap:10px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;">
+        ${squad.map(mate => `
+          <button type="button" class="squad-mate-chip" data-uid="${mate.uid}" style="display:flex;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--line);padding:7px 12px;border-radius:99px;cursor:pointer;font-family:inherit;font-size:12.5px;color:var(--ink);transition:all .15s;white-space:nowrap;">
+            <span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:var(--violet);color:#fff;font-size:10px;font-weight:700;">${MindMesh.initials(mate.name)}</span>
+            <b>${mate.name.split(' ')[0]}</b>
+            <span style="font-size:11px;color:var(--violet);">💬 Text</span>
+          </button>
+        `).join('')}
+      </div>`;
+
+    squadBar.querySelectorAll('.squad-mate-chip').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const uid = btn.dataset.uid;
+        openOrStartChat(uid);
+      });
+    });
+  }
+
+  function openOrStartChat(otherUid) {
+    const existingRow = document.querySelector(`.inbox-row[data-other-uid="${otherUid}"]`);
+    if (existingRow) {
+      existingRow.click();
+      existingRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    } else {
+      // Start fresh chat thread
+      const person = directory[otherUid] || { name: 'Teammate' };
+      const firstName = person.name.split(' ')[0];
+      sendMessage(otherUid, `Hi ${firstName}! Let's connect for the hackathon.`);
+    }
+  }
+
+  renderSquadBar();
+
   function renderInbox(threads){
     if (!threads || threads.length === 0){
       container.innerHTML = `
-        <div class="empty-inbox">
-          <h3 style="margin-bottom:10px;font-size:19px;">No messages yet</h3>
-          <p style="max-width:44ch;margin:0 auto;">Once you or a matched teammate sends the first message from <a href="team.html">My Team</a>, it'll show up here.</p>
+        <div class="empty-inbox" style="padding:40px 24px;text-align:center;background:#fff;border:1px solid var(--line);border-radius:18px;">
+          <div style="font-size:36px;margin-bottom:12px;">💬</div>
+          <h3 style="margin-bottom:8px;font-size:19px;">Your Inbox is Ready</h3>
+          <p style="max-width:44ch;margin:0 auto 20px;color:var(--ink-soft);font-size:14px;">Select any teammate from your squad above to send your first message, or visit <a href="team.html" style="color:var(--violet);font-weight:600;">My Team</a> to start a sprint.</p>
+          ${squad.length > 0 ? `
+            <div style="display:flex;justify-content:center;gap:10px;flex-wrap:wrap;">
+              ${squad.map(m => `
+                <button type="button" class="btn-primary start-chat-btn" data-uid="${m.uid}" style="padding:8px 16px;font-size:13px;border-radius:99px;">
+                  💬 Chat with ${m.name.split(' ')[0]}
+                </button>
+              `).join('')}
+            </div>
+          ` : `
+            <a href="dashboard.html" class="btn-primary" style="display:inline-block;padding:9px 20px;font-size:13px;text-decoration:none;border-radius:99px;">Explore Teammates</a>
+          `}
         </div>`;
+
+      container.querySelectorAll('.start-chat-btn').forEach(b => {
+        b.addEventListener('click', () => openOrStartChat(b.dataset.uid));
+      });
       return;
     }
 
@@ -123,7 +206,15 @@ import {
     threads.forEach((thread, idx) => {
       const otherUid = otherParticipant(thread);
       if (!otherUid) return;
-      const person = directory[otherUid] || { name: 'Teammate', year: '' };
+
+      // Check multiple sources for person metadata
+      const details = (thread.participantDetails && thread.participantDetails[otherUid]) || {};
+      const person = directory[otherUid] || {
+        name: details.name || 'Teammate',
+        photo: details.photo || null,
+        college: details.college || ''
+      };
+
       const unread = isThreadUnread(thread);
       const last = thread.lastMessage;
       const previewPrefix = last && last.from === myUid ? 'You: ' : '';
@@ -131,13 +222,18 @@ import {
 
       const row = document.createElement('div');
       row.className = 'inbox-row' + (unread ? ' unread' : '');
+      row.dataset.otherUid = otherUid;
       row.style.animationDelay = (idx * 0.05) + 's';
       row.innerHTML = `
         <div class="avatar" style="background:${idx % 2 === 0 ? 'var(--violet)' : 'var(--amber)'};">${
           person.photo ? `<img src="${person.photo}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">` : MindMesh.initials(person.name)
         }</div>
         <div class="info">
-          <div class="name-row"><b>${person.name}</b>${unread ? '<span class="unread-dot"></span>' : ''}</div>
+          <div class="name-row">
+            <b>${person.name}</b>
+            ${person.college ? `<span style="font-size:11.5px;color:var(--ink-faint);font-weight:400;">(${person.college.split(' ')[0]})</span>` : ''}
+            ${unread ? '<span class="unread-dot"></span>' : ''}
+          </div>
           <div class="preview">${previewPrefix}${escapeHtml(last ? last.text : 'No messages yet')}</div>
         </div>
         <span class="inbox-time">${timeAgo(last && last.createdAt)}</span>`;
@@ -149,8 +245,15 @@ import {
         <div class="chat-typing-row" id="inbox-typing-${otherUid}" style="display:none;font-size:11.5px;color:var(--violet);margin:6px 0 8px 12px;font-weight:600;">
           <span class="copilot-dot"></span> ${firstName} is typing…
         </div>
+        <!-- Icebreaker chips -->
+        <div class="inbox-starters" style="display:flex;gap:6px;overflow-x:auto;padding:6px 12px;background:var(--bg);border-top:1px solid var(--line);scrollbar-width:none;">
+          <button type="button" class="copilot-chip starter-chip">👋 Say hi!</button>
+          <button type="button" class="copilot-chip starter-chip">🚀 Ready for SIH 2026?</button>
+          <button type="button" class="copilot-chip starter-chip">💻 What tech stack should we use?</button>
+          <button type="button" class="copilot-chip starter-chip">🎨 Let's finalize UI designs</button>
+        </div>
         <div class="chat-input-row">
-          <input type="text" placeholder="Write a message to ${firstName}…" maxlength="500">
+          <input type="text" autocomplete="off" maxlength="500">
           <button type="button">Send</button>
         </div>`;
 
@@ -163,6 +266,16 @@ import {
       const chatInput = chatPanel.querySelector('input');
       const chatSend = chatPanel.querySelector('button');
       const typingIndicator = chatPanel.querySelector(`#inbox-typing-${otherUid}`);
+
+      // Handle icebreaker starters
+      chatPanel.querySelectorAll('.starter-chip').forEach(chip => {
+        chip.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const text = chip.textContent.replace(/^[^\w]+/, '').trim();
+          chatInput.value = text;
+          chatInput.focus();
+        });
+      });
 
       function renderMessages(messages){
         if (typingIndicator) typingIndicator.style.display = 'none';
@@ -198,16 +311,24 @@ import {
         if (window.MindMeshSFX) window.MindMeshSFX.playClick();
         await sendMessage(otherUid, text);
 
-        if (typingIndicator) {
+        if (typingIndicator && (otherUid.startsWith('s1_') || otherUid.startsWith('s2_') || otherUid.startsWith('s3_') || otherUid.startsWith('s4_') || otherUid.startsWith('mock_'))) {
           setTimeout(() => {
             typingIndicator.style.display = 'block';
             chatMessages.scrollTop = chatMessages.scrollHeight;
-          }, 500);
+          }, 400);
         }
       }
+
       chatSend.addEventListener('click', (e) => { e.stopPropagation(); doSend(); });
       chatInput.addEventListener('click', (e) => e.stopPropagation());
       chatInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') doSend(); });
+
+      // If user came via ?chat=<uid>, automatically open this thread
+      if (autoChatUid && otherUid === autoChatUid) {
+        setTimeout(() => {
+          if (!chatPanel.classList.contains('open')) row.click();
+        }, 300);
+      }
     });
   }
 

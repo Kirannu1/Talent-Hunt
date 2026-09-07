@@ -76,17 +76,17 @@
           <div class="field-row">
             <div class="field">
               <label for="f-name">Full Name *</label>
-              <input id="f-name" type="text" placeholder="e.g. Aran Rao" autocomplete="off">
+              <input id="f-name" type="text" autocomplete="off">
             </div>
             <div class="field">
               <label for="f-roll">Campus Roll No / USN / Student ID *</label>
-              <input id="f-roll" type="text" placeholder="e.g. 1RV22CS042 or 2022BCS108" autocomplete="off" style="font-family:'JetBrains Mono',monospace;">
+              <input id="f-roll" type="text" autocomplete="off" style="font-family:'JetBrains Mono',monospace;">
             </div>
           </div>
 
           <div class="field" style="margin-bottom:16px;">
             <label for="f-college">College / University Name *</label>
-            <input id="f-college" list="college-list" type="text" placeholder="e.g. RV College of Engineering (RVCE)" autocomplete="off">
+            <input id="f-college" list="college-list" type="text" autocomplete="off">
             <datalist id="college-list">
               <option value="Easwari Engineering College">
               <option value="SRM Ramapuram (SRM IST)">
@@ -123,7 +123,7 @@
           <div class="field-row">
             <div class="field">
               <label for="f-email">Campus / Student Email</label>
-              <input id="f-email" type="email" placeholder="e.g. aran.cs22@rvce.edu.in" autocomplete="off">
+              <input id="f-email" type="email" autocomplete="off">
               <div id="email-verified-tag" class="domain-badge" style="display:none;">
                 ✓ Verified Institutional Domain
               </div>
@@ -131,10 +131,9 @@
             <div class="field">
               <label for="f-year">Academic Year *</label>
               <select id="f-year">
-                <option value="">Select Year</option>
-                <option value="1st year">1st Year (Freshman)</option>
+                <option value="1st year" selected>1st Year (Freshman)</option>
                 <option value="2nd year">2nd Year (Sophomore)</option>
-                <option value="3rd year" selected>3rd Year (Junior)</option>
+                <option value="3rd year">3rd Year (Junior)</option>
                 <option value="4th year">4th Year (Senior)</option>
                 <option value="Postgrad">Postgraduate / Masters</option>
               </select>
@@ -165,7 +164,7 @@
             </div>
             <div class="field">
               <label for="f-branch">Branch / Department Specialization *</label>
-              <input id="f-branch" type="text" placeholder="e.g. Computer Science & Engineering (AI/ML)" autocomplete="off">
+              <input id="f-branch" type="text" autocomplete="off">
             </div>
           </div>
 
@@ -173,12 +172,12 @@
             <div class="field">
               <label for="f-semester">Current Semester</label>
               <select id="f-semester">
-                <option value="1st Semester">1st Semester</option>
+                <option value="1st Semester" selected>1st Semester</option>
                 <option value="2nd Semester">2nd Semester</option>
                 <option value="3rd Semester">3rd Semester</option>
                 <option value="4th Semester">4th Semester</option>
                 <option value="5th Semester">5th Semester</option>
-                <option value="6th Semester" selected>6th Semester</option>
+                <option value="6th Semester">6th Semester</option>
                 <option value="7th Semester">7th Semester</option>
                 <option value="8th Semester">8th Semester</option>
               </select>
@@ -186,7 +185,7 @@
             <div class="field">
               <label for="f-cgpa">CGPA / Academic GPA</label>
               <div style="display:flex;align-items:center;gap:10px;">
-                <input id="f-cgpa" type="text" placeholder="e.g. 8.92" style="flex:1;" autocomplete="off">
+                <input id="f-cgpa" type="text" style="flex:1;" autocomplete="off">
                 <label style="font-size:12px;color:var(--ink-soft);display:flex;align-items:center;gap:5px;cursor:pointer;white-space:nowrap;">
                   <input type="checkbox" id="f-show-cgpa" checked> Show on ID Card
                 </label>
@@ -200,24 +199,24 @@
             </label>
             <div class="chip-grid" id="chips-clubs"></div>
             <div class="tag-input-row">
-              <input type="text" id="f-custom-club" placeholder="Add custom club (e.g. Web3 Guild, Debating Society)…">
+              <input type="text" id="f-custom-club" autocomplete="off">
               <button type="button" id="btn-add-club">+ Add Club</button>
             </div>
           </div>
 
           <div class="field" style="margin-bottom:16px;">
             <label for="f-achievements">Campus Achievements & Hackathon Track Record</label>
-            <input id="f-achievements" type="text" placeholder="e.g. Smart India Hackathon Finalist · 2x Campus Hackathon Winner · Dean's List" autocomplete="off">
+            <input id="f-achievements" type="text" autocomplete="off">
           </div>
 
           <div class="field-row">
             <div class="field">
               <label for="f-github">GitHub Profile Username / Link</label>
-              <input id="f-github" type="text" placeholder="e.g. github.com/aran-rao" autocomplete="off">
+              <input id="f-github" type="text" autocomplete="off">
             </div>
             <div class="field">
               <label for="f-linkedin">LinkedIn / Portfolio URL</label>
-              <input id="f-linkedin" type="text" placeholder="e.g. linkedin.com/in/aran-rao" autocomplete="off">
+              <input id="f-linkedin" type="text" autocomplete="off">
             </div>
           </div>
         </div>
@@ -234,7 +233,7 @@
           <div class="chip-grid" id="chips-creative" style="margin-top:8px;"></div>
 
           <div class="tag-input-row" style="margin-top:16px;">
-            <input type="text" id="f-custom-skill" placeholder="Add custom skill or framework (e.g. FastAPI, PyTorch, Tailwind, Solidity)…">
+            <input type="text" id="f-custom-skill" autocomplete="off">
             <button type="button" id="btn-add-skill">+ Add Skill</button>
           </div>
 
@@ -457,15 +456,15 @@ import { isCloudReady, getMyUid, saveProfileCloud, loadAllProfilesCloud, addTeam
   let projectCount = 0;
 
   const state = {
-    name: '', rollNo: '', college: 'RV College of Engineering (RVCE)', email: '',
-    photo: null, year: '3rd year', semester: '6th Semester', degree: 'B.Tech / B.E',
-    branch: 'Computer Science', cgpa: '8.92', showCgpa: true,
-    clubs: new Set(['Google Developer Student Club (GDSC)', 'ACM Student Chapter']),
-    achievements: '', github: '', linkedin: '', targetRole: 'Full-Stack AI Engineer',
-    tech: new Set(['Python', 'Machine Learning', 'Data Science']),
+    name: '', rollNo: '', college: '', email: '',
+    photo: null, year: '1st year', semester: '1st Semester', degree: 'B.Tech / B.E',
+    branch: '', cgpa: '', showCgpa: true,
+    clubs: new Set(),
+    achievements: '', github: '', linkedin: '', targetRole: 'Full-Stack Developer',
+    tech: new Set(),
     creative: new Set(),
-    interests: new Set(['AI & ML', 'Data Science']),
-    learnGoals: new Set(['UI/UX Design', 'React']),
+    interests: new Set(),
+    learnGoals: new Set(),
     projects: []
   };
 
@@ -630,8 +629,8 @@ import { isCloudReady, getMyUid, saveProfileCloud, loadAllProfilesCloud, addTeam
     row.dataset.id = id;
     row.innerHTML = `
       <div class="pf">
-        <input type="text" placeholder="Project title (e.g. Campus Bus ETA Predictor)" class="pj-title" value="${prefill ? prefill.title : ''}">
-        <input type="text" placeholder="One line about it (e.g. ML model predicting shuttle arrival using live GPS)" class="pj-desc" value="${prefill ? prefill.desc : ''}">
+        <input type="text" class="pj-title" value="${prefill ? prefill.title : ''}">
+        <input type="text" class="pj-desc" value="${prefill ? prefill.desc : ''}">
       </div>
       <button type="button" title="Remove">✕</button>`;
     row.querySelector('button').addEventListener('click', () => {
@@ -1091,16 +1090,16 @@ import { isCloudReady, getMyUid, saveProfileCloud, loadAllProfilesCloud, addTeam
   });
 
   // ---------- init prefill ----------
-  const existing = MindMesh.loadProfile() || MindMesh.defaultProfile();
-  if (existing){
+  const existing = MindMesh.loadProfile();
+  if (existing && existing.name && existing.name !== 'Aran Rao'){
     state.name = existing.name || '';
-    state.college = existing.college || 'RV College of Engineering (RVCE)';
-    state.rollNo = existing.rollNo || '1RV22CS042';
+    state.college = existing.college || '';
+    state.rollNo = existing.rollNo || '';
     state.email = existing.email || '';
-    state.branch = existing.branch || 'Computer Science';
-    state.year = existing.year || '3rd year';
-    state.semester = existing.semester || '6th Semester';
-    state.cgpa = existing.cgpa || '8.92';
+    state.branch = existing.branch || '';
+    state.year = existing.year || '1st year';
+    state.semester = existing.semester || '1st Semester';
+    state.cgpa = existing.cgpa || '';
     state.achievements = existing.achievements || '';
     state.github = existing.github || '';
     state.linkedin = existing.linkedin || '';
@@ -1125,13 +1124,24 @@ import { isCloudReady, getMyUid, saveProfileCloud, loadAllProfilesCloud, addTeam
       document.getElementById('f-email').value = state.email;
       checkEmailDomain(state.email);
     }
+  } else {
+    // Fresh profile: ensure all text fields and selections are clean and empty
+    document.getElementById('f-name').value = '';
+    document.getElementById('f-college').value = '';
+    document.getElementById('f-roll').value = '';
+    document.getElementById('f-branch').value = '';
+    document.getElementById('f-email').value = '';
+    document.getElementById('f-cgpa').value = '';
+    document.getElementById('f-achievements').value = '';
+    document.getElementById('f-github').value = '';
+    document.getElementById('f-linkedin').value = '';
   }
 
   renderClubChips();
   renderSkillChips();
   renderInterestChips();
   if (state.projects.length === 0) {
-    addProjectRow({ title: 'Campus Bus ETA Predictor', desc: 'ML model predicting shuttle arrival using live GPS pings.' });
+    addProjectRow();
   } else {
     state.projects.forEach(p => addProjectRow(p));
   }

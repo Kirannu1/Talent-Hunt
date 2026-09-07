@@ -27,8 +27,9 @@ const MIME_TYPES = {
   '.ttf': 'font/ttf'
 };
 
-// In-memory message store for local multi-browser testing
+// In-memory message & profile store for local multi-browser testing
 const messageStore = [];
+const profileStore = {};
 
 const server = http.createServer((req, res) => {
   const parsedUrl = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
@@ -103,6 +104,34 @@ const server = http.createServer((req, res) => {
     res.writeHead(200, { ...corsHeaders, 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ ok: true, threads }));
     return;
+  }
+
+  // --- Real-time Profile Store for Local Multi-device Network Sync ---
+  if (reqPath === '/api/profiles') {
+    if (req.method === 'POST') {
+      let body = '';
+      req.on('data', chunk => { body += chunk; });
+      req.on('end', () => {
+        try {
+          const profile = JSON.parse(body);
+          if (profile.uid) {
+            profileStore[profile.uid] = profile;
+          }
+          res.writeHead(200, { ...corsHeaders, 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ ok: true }));
+        } catch (e) {
+          res.writeHead(400, { ...corsHeaders, 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ ok: false, error: 'Invalid JSON' }));
+        }
+      });
+      return;
+    }
+
+    if (req.method === 'GET') {
+      res.writeHead(200, { ...corsHeaders, 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: true, profiles: Object.values(profileStore) }));
+      return;
+    }
   }
 
   if (reqPath === '/' || reqPath === '') reqPath = '/index.html';

@@ -137,11 +137,15 @@ import { isCloudReady, getMyUid, loadMyProfileCloud, removeTeammate, sendMessage
     const card = document.createElement('div');
     card.className = 'team-card';
     card.style.animationDelay = (idx * 0.08) + 's';
+    const avatarHtml = mate.photo
+      ? `<img src="${mate.photo}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`
+      : MindMesh.initials(mate.name);
+
     card.innerHTML = `
       <div class="top">
         <div class="who">
-          <div class="avatar" style="background:${idx % 2 === 0 ? 'var(--violet)' : 'var(--amber)'};">${MindMesh.initials(mate.name)}</div>
-          <div><b>${mate.name}</b><span>${mate.year || ''}</span></div>
+          <div class="avatar" style="background:${idx % 2 === 0 ? 'var(--violet)' : 'var(--amber)'};overflow:hidden;display:flex;align-items:center;justify-content:center;">${avatarHtml}</div>
+          <div><b>${MindMesh.escapeHtml(mate.name)}</b><span>${MindMesh.escapeHtml(mate.year || '')}</span></div>
         </div>
         <button type="button" class="remove-teammate">Remove</button>
       </div>

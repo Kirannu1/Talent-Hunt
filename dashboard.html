@@ -66,7 +66,7 @@
             <span id="dash-usn" style="font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--amber-tint);color:var(--amber-deep);padding:3px 8px;border-radius:6px;font-weight:700;">USN: —</span>
             <span class="verified-campus-badge" id="dash-campus-badge" style="display:inline-flex;">
               <span class="verified-pulse"></span>
-              <span id="dash-college">RV College of Engineering</span>
+              <span id="dash-college">Campus Node</span>
             </span>
           </div>
           <div id="dash-meta" style="margin-top:6px;font-size:13.5px;color:var(--ink-soft);">—</div>
@@ -74,8 +74,7 @@
         </div>
       </div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
-        <span id="dash-cgpa-pill" style="font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;color:var(--violet-deep);background:var(--violet-tint);padding:6px 14px;border-radius:99px;border:1px solid rgba(108,76,224,0.2);">
-          CGPA 8.92 ⭐
+        <span id="dash-cgpa-pill" style="display:none;font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;color:var(--violet-deep);background:var(--violet-tint);padding:6px 14px;border-radius:99px;border:1px solid rgba(108,76,224,0.2);">
         </span>
         <a href="profile.html" class="btn-outline" style="padding:7px 16px;font-size:12.5px;border-radius:99px;text-decoration:none;">
           ✏️ Edit Profile
@@ -172,12 +171,30 @@ import { isCloudReady, loadMyProfileCloud, loadAllProfilesCloud, subscribeAllPro
 
   let profile = await loadMyProfileCloud();
   const isDemo = !profile;
-  if (!profile) profile = MindMesh.defaultProfile();
+  if (!profile) {
+    profile = {
+      name: 'Welcome to MindMesh',
+      college: 'Campus Node',
+      rollNo: '',
+      degree: '',
+      branch: '',
+      year: '',
+      semester: '',
+      cgpa: '',
+      photo: null,
+      clubs: [],
+      tech: [],
+      creative: [],
+      interests: [],
+      learnGoals: [],
+      projects: []
+    };
+  }
 
   document.getElementById('empty-note').style.display = isDemo ? 'block' : 'none';
-  document.getElementById('dash-title').textContent = isDemo ? 'A sample mesh.' : `${profile.name.split(' ')[0]}'s mesh, at a glance.`;
+  document.getElementById('dash-title').textContent = isDemo ? 'Welcome to your mesh.' : `${profile.name.split(' ')[0]}'s mesh, at a glance.`;
   document.getElementById('dash-sub').textContent = isDemo
-    ? 'Build your own profile to replace this with your real matches.'
+    ? 'Build your profile to discover real campus teammates and opportunities.'
     : 'Growth, matches, and opportunities — updated from your profile.';
 
   document.getElementById('dash-avatar').innerHTML = profile.photo
@@ -185,13 +202,9 @@ import { isCloudReady, loadMyProfileCloud, loadAllProfilesCloud, subscribeAllPro
     : MindMesh.initials(profile.name);
   document.getElementById('dash-name').textContent = profile.name;
   document.getElementById('dash-usn').textContent = profile.rollNo ? `USN: ${profile.rollNo}` : 'CAMPUS NODE';
-  document.getElementById('dash-college').textContent = profile.college || 'RV College of Engineering (RVCE)';
-  document.getElementById('dash-meta').textContent = [
-    profile.degree || 'B.Tech / B.E',
-    profile.branch || 'Computer Science',
-    profile.year || '3rd year',
-    profile.semester || '6th Semester'
-  ].filter(Boolean).join(' · ');
+  document.getElementById('dash-college').textContent = profile.college || 'Campus Node';
+  const metaParts = [profile.degree, profile.branch, profile.year, profile.semester].filter(Boolean);
+  document.getElementById('dash-meta').textContent = metaParts.length ? metaParts.join(' · ') : (isDemo ? 'Profile not yet built' : 'Verified Student');
 
   const cgpaPill = document.getElementById('dash-cgpa-pill');
   if (profile.cgpa) {
@@ -467,19 +480,37 @@ import { isCloudReady, loadMyProfileCloud, loadAllProfilesCloud, subscribeAllPro
       }).sort((a, b) => b.score - a.score).slice(0, 3);
     }
 
+    if (!matches || matches.length === 0){
+      matchEl.innerHTML = `
+        <div style="grid-column:1/-1;padding:36px 20px;text-align:center;background:#fff;border-radius:14px;border:1px solid var(--line);">
+          <div style="font-size:32px;margin-bottom:10px;">🌱</div>
+          <div style="font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:700;margin-bottom:6px;">You are the pioneer node on your campus!</div>
+          <p style="font-size:13.5px;color:var(--ink-soft);max-width:440px;margin:0 auto 16px;">As other students map their profiles, MindMesh AI will automatically calculate synergy scores and connect you to complementary builders.</p>
+          <a href="profile.html" class="btn-primary" style="display:inline-flex;text-decoration:none;padding:9px 20px;font-size:13px;border-radius:99px;">View or Share Profile →</a>
+        </div>`;
+      return;
+    }
+
     matchEl.innerHTML = matches.map((m, idx) => {
       const skillsTxt = ([...(m.student.tech||[]), ...(m.student.creative||[])].slice(0,3).join(' · ')) || (m.student.interests||[]).join(' · ');
       const alreadyOnTeam = profile.team && profile.team[m.student.uid];
+      const avatarHtml = m.student.photo
+        ? `<img src="${m.student.photo}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`
+        : MindMesh.initials(m.student.name);
+
       return `
       <div class="match-card" style="animation-delay:${idx * 0.1}s;">
         <div class="top">
           <div class="who">
-            <div class="avatar" style="background:${idx % 2 === 0 ? 'var(--violet)' : 'var(--amber)'};width:34px;height:34px;font-size:12px;">${MindMesh.initials(m.student.name)}</div>
-            <div><b>${m.student.name}</b><span>${m.student.year || ''}</span></div>
+            <div class="avatar" style="background:${idx % 2 === 0 ? 'var(--violet)' : 'var(--amber)'};width:34px;height:34px;font-size:12px;overflow:hidden;padding:0;display:flex;align-items:center;justify-content:center;">${avatarHtml}</div>
+            <div>
+              <b>${MindMesh.escapeHtml(m.student.name)}</b>
+              <span style="font-size:11.5px;color:var(--ink-faint);">${MindMesh.escapeHtml(m.student.college ? m.student.college.split(' ')[0] : '')}${m.student.year ? ' · ' + MindMesh.escapeHtml(m.student.year) : ''}</span>
+            </div>
           </div>
           <span class="match-score">${m.score}%</span>
         </div>
-        <div class="tag-row">${skillsTxt.split(' · ').filter(Boolean).map(s=>`<span style="background:var(--bg-alt);color:var(--ink-soft);">${s}</span>`).join('')}</div>
+        <div class="tag-row">${skillsTxt ? skillsTxt.split(' · ').filter(Boolean).map(s=>`<span style="background:var(--bg-alt);color:var(--ink-soft);">${MindMesh.escapeHtml(s)}</span>`).join('') : '<span style="background:var(--bg-alt);color:var(--ink-soft);">Campus Node</span>'}</div>
         <button type="button" class="select-team-btn${alreadyOnTeam ? ' added' : ''}" data-uid="${m.student.uid}">${alreadyOnTeam ? 'Added to team' : 'Add to my team'}</button>
       </div>`;
     }).join('');

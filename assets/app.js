@@ -54,68 +54,8 @@ const MindMesh = (function () {
     'AI & Data Science Society'
   ];
 
-  const MOCK_STUDENTS = [
-    {
-      uid: 'mock_meera_sharma', name: 'Meera Sharma', year: '2nd year', branch: 'Design & Interaction',
-      college: 'Easwari Engineering College', rollNo: '310623DS014', degree: 'B.Tech in Information Technology', semester: '4th Semester', cgpa: '9.1',
-      clubs: ['Design & UI/UX Guild', 'ACM Student Chapter'],
-      tech: ['Figma'], creative: ['UI/UX Design', 'Figma', 'Illustration'], interests: ['Product Design', 'AI & ML']
-    },
-    {
-      uid: 'mock_kabir_anand', name: 'Kabir Anand', year: '4th year', branch: 'Computer Science',
-      college: 'SRM Ramapuram (SRM IST)', rollNo: 'RA2111003020054', degree: 'B.Tech in Computer Science', semester: '8th Semester', cgpa: '8.85',
-      clubs: ['Google Developer Student Club (GDSC)', 'AI & Data Science Society'],
-      tech: ['Python', 'Machine Learning', 'SQL'], creative: [], interests: ['AI & ML', 'Data Science']
-    },
-    {
-      uid: 'mock_wei_chen', name: 'Wei Chen', year: '3rd year', branch: 'Computer Science',
-      college: 'Rajalakshmi Engineering College (REC)', rollNo: '210701512', degree: 'B.E. in Computer Science', semester: '6th Semester', cgpa: '9.3',
-      clubs: ['Open Source Software Guild', 'Competitive Programming Club'],
-      tech: ['React', 'Node.js', 'JavaScript'], creative: [], interests: ['Web Development', 'Entrepreneurship']
-    },
-    {
-      uid: 'mock_ananya_iyer', name: 'Ananya Iyer', year: '1st year', branch: 'Media & Tech Comm',
-      college: 'Sri Venkateswara College of Engineering (SVCE)', rollNo: '24IT029', degree: 'B.Tech in Information Technology', semester: '2nd Semester', cgpa: '8.7',
-      clubs: ['E-Cell / Entrepreneurship Cell', 'Rotaract / Social Impact'],
-      tech: [], creative: ['Public Speaking', 'Copywriting', 'Content Strategy'], interests: ['Entrepreneurship', 'EdTech']
-    },
-    {
-      uid: 'mock_dev_patel', name: 'Dev Patel', year: '3rd year', branch: 'Electronics & Comm.',
-      college: 'St. Joseph\'s College of Engineering', rollNo: '312322EC114', degree: 'B.E. in ECE', semester: '6th Semester', cgpa: '8.6',
-      clubs: ['Robotics & Automation Guild', 'IEEE Computer Society'],
-      tech: ['Arduino / IoT', 'C++'], creative: [], interests: ['Robotics & IoT', 'Sustainability Tech']
-    },
-    {
-      uid: 'mock_farah_idris', name: 'Farah Idris', year: '2nd year', branch: 'Computer Science',
-      college: 'VIT Vellore', rollNo: '23BCE0041', degree: 'B.Tech in Computer Science', semester: '4th Semester', cgpa: '9.4',
-      clubs: ['Competitive Programming Club', 'Open Source Software Guild'],
-      tech: ['Python', 'Cybersecurity'], creative: [], interests: ['FinTech', 'AI & ML']
-    },
-    {
-      uid: 'mock_rohan_verma', name: 'Rohan Verma', year: '4th year', branch: 'Digital Media & Game Design',
-      college: 'Meenakshi Engineering College', rollNo: '311521CS089', degree: 'B.E. in Computer Science', semester: '7th Semester', cgpa: '8.4',
-      clubs: ['Design & UI/UX Guild'],
-      tech: [], creative: ['3D Modeling', 'Animation', 'Video Editing'], interests: ['Game Development', 'Product Design']
-    },
-    {
-      uid: 'mock_priya_nair', name: 'Priya Nair', year: '2nd year', branch: 'Computer Science & AI',
-      college: 'Vellore Institute of Technology (VIT)', rollNo: '23BAI1077', degree: 'B.Tech in AI & ML', semester: '4th Semester', cgpa: '8.9',
-      clubs: ['Google Developer Student Club (GDSC)'],
-      tech: ['Java', 'Android'], creative: [], interests: ['Mobile Apps', 'HealthTech']
-    },
-    {
-      uid: 'mock_leo_martins', name: 'Leo Martins', year: '3rd year', branch: 'Cloud & Systems',
-      college: 'RV College of Engineering (RVCE)', rollNo: '1RV22CS092', degree: 'B.E. in Computer Science', semester: '6th Semester', cgpa: '8.75',
-      clubs: ['Open Source Software Guild', 'ACM Student Chapter'],
-      tech: ['Cloud / AWS', 'Node.js'], creative: [], interests: ['Web Development', 'FinTech']
-    },
-    {
-      uid: 'mock_tanvi_rao', name: 'Tanvi Rao', year: '1st year', branch: 'Design & Interaction',
-      college: 'Easwari Engineering College', rollNo: '310624IT019', degree: 'B.Tech in Information Technology', semester: '2nd Semester', cgpa: '9.0',
-      clubs: ['Design & UI/UX Guild'],
-      tech: [], creative: ['UI/UX Design', 'Photography'], interests: ['Product Design', 'Sustainability Tech']
-    }
-  ];
+  // No hardcoded default mock profiles — only real registered students appear
+  const MOCK_STUDENTS = [];
 
   const OPPORTUNITIES = [
     { name: 'HackNorth — Campus AI Track', type: 'Hackathon', meta: 'Team of 4 needed · starts in 6 days', tags: ['Machine Learning', 'Python', 'AI & ML'] },
@@ -150,46 +90,27 @@ const MindMesh = (function () {
   }
 
   function defaultProfile() {
-    return {
-      name: 'Aran Rao',
-      college: 'RV College of Engineering (RVCE)',
-      rollNo: '1RV22CS042',
-      degree: 'B.Tech in Computer Science & AI',
-      semester: '6th Semester',
-      cgpa: '8.92',
-      clubs: ['Google Developer Student Club (GDSC)', 'ACM Student Chapter'],
-      achievements: 'Smart India Hackathon Finalist · 2x Campus Hackathon Winner',
-      github: 'aran-rao',
-      linkedin: 'aran-rao-ai',
-      year: '3rd year',
-      branch: 'Computer Science',
-      tech: ['Python', 'Machine Learning', 'Data Science'],
-      creative: [],
-      interests: ['AI & ML', 'Data Science'],
-      projects: [{ title: 'Campus Bus ETA Predictor', desc: 'ML model predicting shuttle arrival using live GPS pings.' }],
-      learnGoals: ['UI/UX Design', 'React']
-    };
+    return null;
   }
 
   function allSkills(profile) {
+    if (!profile) return [];
     return [...(profile.tech || []), ...(profile.creative || [])];
   }
 
-  // Combines real classmate profiles (from the shared database) with the
-  // built-in mock roster, so matching always has enough people to work
-  // with — even for the very first student on a brand new campus — but
-  // prefers real people the moment there are enough of them.
+  // Returns only real classmate profiles (from the shared database), excluding self
   function mergePool(profile, otherProfiles) {
-    const others = (otherProfiles || []).filter(p => !(profile.uid && p.uid === profile.uid));
-    return others.length >= 3 ? others : others.concat(MOCK_STUDENTS);
+    return (otherProfiles || []).filter(p => !(profile && profile.uid && p.uid === profile.uid));
   }
 
   // complementary teammate matching: rewards shared interests + skills the
   // student doesn't already have (i.e. genuinely complementary, not a clone)
   function computeMatches(profile, count, pool) {
+    if (!profile) return [];
     const mySkills = new Set(allSkills(profile));
     const myInterests = new Set(profile.interests || []);
-    const candidates = pool || MOCK_STUDENTS;
+    const candidates = pool || [];
+    if (candidates.length === 0) return [];
 
     const scored = candidates.map(s => {
       const theirSkills = [...(s.tech || []), ...(s.creative || [])];

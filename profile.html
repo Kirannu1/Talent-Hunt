@@ -131,7 +131,8 @@
             <div class="field">
               <label for="f-year">Academic Year *</label>
               <select id="f-year">
-                <option value="1st year" selected>1st Year (Freshman)</option>
+                <option value="" disabled selected>Select Academic Year</option>
+                <option value="1st year">1st Year (Freshman)</option>
                 <option value="2nd year">2nd Year (Sophomore)</option>
                 <option value="3rd year">3rd Year (Junior)</option>
                 <option value="4th year">4th Year (Senior)</option>
@@ -154,6 +155,7 @@
             <div class="field">
               <label for="f-degree">Degree / Program</label>
               <select id="f-degree">
+                <option value="" disabled selected>Select Degree / Program</option>
                 <option value="B.Tech / B.E">B.Tech / B.E (Engineering)</option>
                 <option value="B.Des">B.Des (Design / Interaction)</option>
                 <option value="BCA / MCA">BCA / MCA (Computer Applications)</option>
@@ -172,7 +174,8 @@
             <div class="field">
               <label for="f-semester">Current Semester</label>
               <select id="f-semester">
-                <option value="1st Semester" selected>1st Semester</option>
+                <option value="" disabled selected>Select Current Semester</option>
+                <option value="1st Semester">1st Semester</option>
                 <option value="2nd Semester">2nd Semester</option>
                 <option value="3rd Semester">3rd Semester</option>
                 <option value="4th Semester">4th Semester</option>
@@ -266,6 +269,7 @@
           <div class="field" style="margin-bottom:20px;">
             <label for="f-target-role">Target Campus Role</label>
             <select id="f-target-role">
+              <option value="" disabled selected>Select Target Campus Role</option>
               <option value="Full-Stack AI Engineer">Full-Stack AI Engineer</option>
               <option value="AI Product Designer">AI Product Designer</option>
               <option value="Technical Campus Founder">Technical Campus Founder</option>
@@ -348,7 +352,7 @@
           <div class="campus-id-top">
             <div class="campus-college-brand">
               <div class="campus-crest" id="card-crest">🎓</div>
-              <span id="card-college-name">RV College of Engineering</span>
+              <span id="card-college-name">Campus Node</span>
             </div>
             <div class="verified-campus-badge">
               <span class="verified-pulse"></span>
@@ -361,20 +365,17 @@
               <div class="fallback-initials" id="card-initials">YOU</div>
             </div>
             <div class="campus-id-person">
-              <div class="campus-id-name" id="card-name">Aran Rao</div>
-              <div class="campus-id-usn" id="card-usn">USN: 1RV22CS042</div>
-              <div class="campus-id-degree" id="card-degree">B.Tech · Computer Science</div>
+              <div class="campus-id-name" id="card-name">Student Node</div>
+              <div class="campus-id-usn" id="card-usn">USN: PENDING</div>
+              <div class="campus-id-degree" id="card-degree">Degree · Specialization</div>
             </div>
           </div>
           <div class="campus-id-stats-row">
-            <div class="campus-stat-item">Academic Standing: <b id="card-standing">3rd Year · Sem 6</b></div>
-            <div class="campus-stat-item">Academic Score: <b id="card-cgpa">CGPA 8.92 ⭐</b></div>
+            <div class="campus-stat-item">Academic Standing: <b id="card-standing">—</b></div>
+            <div class="campus-stat-item">Academic Score: <b id="card-cgpa">—</b></div>
           </div>
           <div class="campus-id-tags-row" id="card-tags-row">
-            <span class="campus-club-pill" id="card-club-preview">🏛️ GDSC Student Lead</span>
-            <span class="campus-skill-pill">Python</span>
-            <span class="campus-skill-pill">Machine Learning</span>
-            <span class="campus-skill-pill">Data Science</span>
+            <span class="campus-skill-pill">AI Node</span>
           </div>
           <div class="campus-id-bottom">
             <div class="campus-qr-box">
@@ -622,20 +623,39 @@ import { isCloudReady, getMyUid, saveProfileCloud, loadAllProfilesCloud, addTeam
 
   // ---------- projects ----------
   const projectList = document.getElementById('project-list');
+  function checkEmptyProjects(){
+    const existingHint = document.getElementById('empty-pj-hint');
+    if (state.projects.length === 0){
+      if (!existingHint){
+        const hint = document.createElement('div');
+        hint.id = 'empty-pj-hint';
+        hint.style.cssText = 'padding:14px;border:1px dashed var(--line);border-radius:10px;font-size:13px;color:var(--ink-soft);margin-bottom:12px;background:rgba(255,255,255,0.4);text-align:center;';
+        hint.textContent = 'No projects added yet. Click "+ Add a project" below to showcase your hackathon builds or apps.';
+        projectList.appendChild(hint);
+      }
+    } else {
+      if (existingHint) existingHint.remove();
+    }
+  }
+
   function addProjectRow(prefill){
+    const hint = document.getElementById('empty-pj-hint');
+    if (hint) hint.remove();
+
     const id = projectCount++;
     const row = document.createElement('div');
     row.className = 'project-row';
     row.dataset.id = id;
     row.innerHTML = `
       <div class="pf">
-        <input type="text" class="pj-title" value="${prefill ? prefill.title : ''}">
-        <input type="text" class="pj-desc" value="${prefill ? prefill.desc : ''}">
+        <input type="text" class="pj-title" placeholder="Project Title (e.g. Campus Navigation App)" value="${prefill ? MindMesh.escapeHtml(prefill.title || '') : ''}">
+        <input type="text" class="pj-desc" placeholder="Brief description & tech stack used..." value="${prefill ? MindMesh.escapeHtml(prefill.desc || '') : ''}">
       </div>
       <button type="button" title="Remove">✕</button>`;
     row.querySelector('button').addEventListener('click', () => {
       row.remove();
       state.projects = state.projects.filter(p => p.id !== id);
+      checkEmptyProjects();
       updateCompleteness();
     });
     row.querySelectorAll('input').forEach(inp => {
@@ -646,7 +666,9 @@ import { isCloudReady, getMyUid, saveProfileCloud, loadAllProfilesCloud, addTeam
       });
     });
     projectList.appendChild(row);
-    state.projects.push({ id, title: prefill ? prefill.title : '', desc: prefill ? prefill.desc : '' });
+    if (!prefill) {
+      state.projects.push({ id, title: '', desc: '' });
+    }
   }
   document.getElementById('add-project').addEventListener('click', () => addProjectRow());
 
@@ -736,20 +758,35 @@ import { isCloudReady, getMyUid, saveProfileCloud, loadAllProfilesCloud, addTeam
   // ---------- Update Digital Student ID Card Preview ----------
   function updateCardPreview(){
     const name = state.name.trim() || 'Student Node';
-    const college = state.college.trim() || 'Campus University';
+    const college = state.college.trim() || 'Campus Node';
     const usn = state.rollNo.trim() || 'USN: PENDING';
-    const degree = state.degree || 'B.Tech';
-    const branch = state.branch.trim() || 'Computer Science';
-    const year = state.year || '3rd Year';
-    const semester = state.semester || 'Sem 6';
-    const cgpa = state.cgpa.trim() || '8.92';
+    const degree = state.degree || '';
+    const branch = state.branch.trim() || '';
+    const year = state.year || '';
+    const semester = state.semester || '';
+    const cgpa = state.cgpa.trim() || '';
 
     document.getElementById('card-name').textContent = name;
     document.getElementById('card-college-name').textContent = college;
     document.getElementById('card-usn').textContent = usn.startsWith('USN:') ? usn : `USN: ${usn}`;
-    document.getElementById('card-degree').textContent = `${degree} · ${branch}`;
-    document.getElementById('card-standing').textContent = `${year} · ${semester}`;
-    document.getElementById('card-cgpa').textContent = state.showCgpa ? `CGPA ${cgpa} ⭐` : 'Verified Active';
+    
+    let degreeBranchText = 'Degree · Specialization';
+    if (degree && branch) degreeBranchText = `${degree} · ${branch}`;
+    else if (degree) degreeBranchText = degree;
+    else if (branch) degreeBranchText = branch;
+    document.getElementById('card-degree').textContent = degreeBranchText;
+
+    let standingText = '—';
+    if (year && semester) standingText = `${year} · ${semester}`;
+    else if (year) standingText = year;
+    else if (semester) standingText = semester;
+    document.getElementById('card-standing').textContent = standingText;
+
+    let cgpaText = 'Verified Node';
+    if (state.showCgpa){
+      cgpaText = cgpa ? `CGPA ${cgpa} ⭐` : 'CGPA: —';
+    }
+    document.getElementById('card-cgpa').textContent = cgpaText;
 
     const cardPhoto = document.getElementById('card-photo-img');
     const cardInitials = document.getElementById('card-initials');
@@ -929,35 +966,40 @@ import { isCloudReady, getMyUid, saveProfileCloud, loadAllProfilesCloud, addTeam
   btnNext.addEventListener('click', () => { if (!btnNext.disabled && current < steps.length - 1) goTo(current + 1); });
 
   function renderReview(){
+    const degBranch = (state.degree && state.branch) ? `${state.degree} · ${state.branch}` : (state.degree || state.branch || 'Degree not set');
+    const yrSem = (state.year && state.semester) ? `(${state.year}, ${state.semester})` : (state.year || state.semester ? `(${state.year || state.semester})` : '');
+    const validProjects = state.projects.filter(p => p.title && p.title.trim().length > 0);
+
     document.getElementById('rv-basics').innerHTML = `
-      <b style="display:block;font-size:15px;">${state.name || '—'}</b>
-      <span style="color:var(--violet);font-family:'JetBrains Mono',monospace;font-size:12px;display:block;">${state.rollNo ? `USN: ${state.rollNo}` : 'Campus ID not set'}</span>
-      <span style="color:var(--ink-soft);font-size:13px;display:block;margin-top:2px;">🏛️ ${state.college || 'College not set'}</span>
-      <span style="color:var(--ink-soft);font-size:12.5px;display:block;">${state.degree} · ${state.branch} (${state.year}, ${state.semester})</span>
-      <span style="color:#2F855A;font-size:12px;font-weight:700;display:inline-block;margin-top:4px;">${state.showCgpa ? `⭐ CGPA: ${state.cgpa || '8.92'}` : 'Academic Profile Verified'}</span>
+      <b style="display:block;font-size:15px;">${MindMesh.escapeHtml(state.name || '—')}</b>
+      <span style="color:var(--violet);font-family:'JetBrains Mono',monospace;font-size:12px;display:block;">${state.rollNo ? `USN: ${MindMesh.escapeHtml(state.rollNo)}` : 'Campus ID not set'}</span>
+      <span style="color:var(--ink-soft);font-size:13px;display:block;margin-top:2px;">🏛️ ${MindMesh.escapeHtml(state.college || 'College not set')}</span>
+      <span style="color:var(--ink-soft);font-size:12.5px;display:block;">${MindMesh.escapeHtml(degBranch)} ${MindMesh.escapeHtml(yrSem)}</span>
+      <span style="color:#2F855A;font-size:12px;font-weight:700;display:inline-block;margin-top:4px;">${state.showCgpa ? (state.cgpa ? `⭐ CGPA: ${MindMesh.escapeHtml(state.cgpa)}` : 'Academic Standing Active') : 'Academic Profile Verified'}</span>
     `;
 
     const clubsList = Array.from(state.clubs);
     document.getElementById('rv-clubs').innerHTML = `
       <b>Clubs & Societies:</b>
       <div style="margin-top:4px;display:flex;flex-wrap:wrap;gap:4px;">
-        ${clubsList.length ? clubsList.map(c => `<span style="font-size:11px;background:#fff;border:1px solid var(--line);padding:2px 7px;border-radius:4px;">${c}</span>`).join('') : '<span style="color:var(--ink-faint);">None added</span>'}
+        ${clubsList.length ? clubsList.map(c => `<span style="font-size:11px;background:#fff;border:1px solid var(--line);padding:2px 7px;border-radius:4px;">${MindMesh.escapeHtml(c)}</span>`).join('') : '<span style="color:var(--ink-faint);">None added</span>'}
       </div>
-      ${state.achievements ? `<div style="margin-top:8px;font-size:12px;color:var(--ink-soft);"><b>Track Record:</b> ${state.achievements}</div>` : ''}
+      ${state.achievements ? `<div style="margin-top:8px;font-size:12px;color:var(--ink-soft);"><b>Track Record:</b> ${MindMesh.escapeHtml(state.achievements)}</div>` : ''}
+      ${validProjects.length ? `<div style="margin-top:8px;font-size:12px;color:var(--ink-soft);"><b>Projects:</b> ${validProjects.map(p => MindMesh.escapeHtml(p.title)).join(', ')}</div>` : ''}
     `;
 
     const skills = [...state.tech, ...state.creative];
     document.getElementById('rv-skills').innerHTML = skills.length
-      ? skills.map(s => `<span>${s}</span>`).join('') : '<span>None yet</span>';
+      ? skills.map(s => `<span>${MindMesh.escapeHtml(s)}</span>`).join('') : '<span>None yet</span>';
 
     const interests = [...state.interests];
     const goals = [...state.learnGoals];
     document.getElementById('rv-goals').innerHTML = `
       <div style="display:flex;flex-wrap:wrap;gap:6px;">
-        ${interests.map(i => `<span style="font-size:11.5px;padding:3px 8px;border-radius:99px;background:var(--amber-tint);color:var(--amber-deep);">${i}</span>`).join('')}
-        ${goals.map(g => `<span style="font-size:11.5px;padding:3px 8px;border-radius:99px;background:var(--violet-tint);color:var(--violet-deep);">Goal: ${g}</span>`).join('')}
+        ${interests.map(i => `<span style="font-size:11.5px;padding:3px 8px;border-radius:99px;background:var(--amber-tint);color:var(--amber-deep);">${MindMesh.escapeHtml(i)}</span>`).join('')}
+        ${goals.map(g => `<span style="font-size:11.5px;padding:3px 8px;border-radius:99px;background:var(--violet-tint);color:var(--violet-deep);">Goal: ${MindMesh.escapeHtml(g)}</span>`).join('')}
       </div>
-      <div style="margin-top:8px;font-size:12px;color:var(--ink-soft);">Target Role: <b>${state.targetRole}</b></div>
+      <div style="margin-top:8px;font-size:12px;color:var(--ink-soft);">Target Role: <b>${MindMesh.escapeHtml(state.targetRole || 'Not specified')}</b></div>
     `;
   }
 
@@ -980,20 +1022,20 @@ import { isCloudReady, getMyUid, saveProfileCloud, loadAllProfilesCloud, addTeam
       name: state.name || 'Student Node',
       uid: getMyUid(),
       photo: state.photo || null,
-      college: state.college || 'RV College of Engineering (RVCE)',
-      rollNo: state.rollNo || '1RV22CS042',
+      college: state.college || '',
+      rollNo: state.rollNo || '',
       email: state.email || '',
-      degree: state.degree || 'B.Tech / B.E',
-      branch: state.branch || 'Computer Science',
-      year: state.year || '3rd year',
-      semester: state.semester || '6th Semester',
-      cgpa: state.cgpa || '8.92',
+      degree: state.degree || '',
+      branch: state.branch || '',
+      year: state.year || '',
+      semester: state.semester || '',
+      cgpa: state.cgpa || '',
       showCgpa: state.showCgpa,
       clubs: [...state.clubs],
       achievements: state.achievements || '',
       github: state.github || '',
       linkedin: state.linkedin || '',
-      targetRole: state.targetRole || 'Full-Stack AI Engineer',
+      targetRole: state.targetRole || '',
       tech: [...state.tech], creative: [...state.creative],
       interests: [...state.interests], learnGoals: [...state.learnGoals],
       projects: state.projects.filter(p => p.title && p.title.trim().length > 0)
@@ -1031,43 +1073,57 @@ import { isCloudReady, getMyUid, saveProfileCloud, loadAllProfilesCloud, addTeam
       : MindMesh.initials(profile.name);
     document.getElementById('res-heading').textContent = `Node Verified: ${profile.name.split(' ')[0]} 🎓`;
     document.getElementById('res-sub').textContent =
-      `Activated at ${profile.college}. Based on ${MindMesh.allSkills(profile).length} verified skills and ${profile.interests.length} domains, here are your optimal campus matches.`;
+      `Activated at ${profile.college || 'your campus'}. Based on ${MindMesh.allSkills(profile).length} verified skills and ${profile.interests.length} domains, here are your optimal campus matches.`;
 
     const matches = MindMesh.computeMatches(profile, 3, pool);
     const matchesEl = document.getElementById('res-matches');
     matchesEl.innerHTML = '';
-    matches.forEach((m, idx) => {
-      const card = document.createElement('div');
-      card.className = 'match-card';
-      card.style.animationDelay = (idx * 0.1) + 's';
-      const skillsTxt = [...m.student.tech, ...m.student.creative].slice(0,3).join(' · ') || m.student.interests.join(' · ');
-      card.innerHTML = `
-        <div class="top">
-          <div class="who">
-            <div class="avatar" style="background:${idx % 2 === 0 ? 'var(--violet)' : 'var(--amber)'};width:36px;height:36px;font-size:13px;">${MindMesh.initials(m.student.name)}</div>
-            <div>
-              <b>${m.student.name}</b>
-              <span style="font-size:11.5px;color:var(--ink-faint);">${m.student.college ? m.student.college.split(' ')[0] : ''} · ${m.student.year}</span>
+    if (!matches || matches.length === 0){
+      matchesEl.innerHTML = `
+        <div style="grid-column:1/-1;padding:32px;text-align:center;background:#fff;border-radius:14px;border:1px solid var(--line);">
+          <div style="font-size:32px;margin-bottom:10px;">🌱</div>
+          <div style="font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:700;margin-bottom:6px;">You are the pioneer node on your campus!</div>
+          <p style="font-size:13.5px;color:var(--ink-soft);max-width:440px;margin:0 auto 16px;">As other students map their profiles, MindMesh AI will automatically calculate synergy scores and connect you to complementary builders.</p>
+          <a href="dashboard.html" class="btn-primary" style="display:inline-flex;text-decoration:none;padding:10px 20px;">Open Student Dashboard →</a>
+        </div>`;
+    } else {
+      matches.forEach((m, idx) => {
+        const card = document.createElement('div');
+        card.className = 'match-card';
+        card.style.animationDelay = (idx * 0.1) + 's';
+        const skillsTxt = [...m.student.tech, ...m.student.creative].slice(0,3).join(' · ') || m.student.interests.join(' · ');
+        const avatarHtml = m.student.photo
+          ? `<img src="${m.student.photo}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`
+          : MindMesh.initials(m.student.name);
+
+        card.innerHTML = `
+          <div class="top">
+            <div class="who">
+              <div class="avatar" style="background:${idx % 2 === 0 ? 'var(--violet)' : 'var(--amber)'};width:36px;height:36px;font-size:13px;overflow:hidden;padding:0;display:flex;align-items:center;justify-content:center;">${avatarHtml}</div>
+              <div>
+                <b>${MindMesh.escapeHtml(m.student.name)}</b>
+                <span style="font-size:11.5px;color:var(--ink-faint);">${MindMesh.escapeHtml(m.student.college ? m.student.college.split(' ')[0] : '')}${m.student.year ? ' · ' + MindMesh.escapeHtml(m.student.year) : ''}</span>
+              </div>
             </div>
+            <span class="match-score">${m.score}%</span>
           </div>
-          <span class="match-score">${m.score}%</span>
-        </div>
-        <div class="tag-row" style="color:var(--ink-soft);">${skillsTxt.split(' · ').map(s=>`<span style="background:var(--bg-alt);color:var(--ink-soft);">${s}</span>`).join('')}</div>
-        <button type="button" class="select-team-btn" data-uid="${m.student.uid}">Add to my team</button>`;
-      const btn = card.querySelector('.select-team-btn');
-      btn.addEventListener('click', async (e) => {
-        btn.disabled = true; btn.textContent = 'Adding…';
-        await addTeammate(m.student);
-        btn.classList.add('added');
-        btn.textContent = 'Added to team';
-        const rect = btn.getBoundingClientRect();
-        if (window.MindMeshToast){
-          window.MindMeshToast.burst(rect.left + rect.width / 2, rect.top);
-          window.MindMeshToast.show(m.student.name.split(' ')[0] + ' added to your team', { type: 'success' });
-        }
+          <div class="tag-row" style="color:var(--ink-soft);">${skillsTxt ? skillsTxt.split(' · ').map(s=>`<span style="background:var(--bg-alt);color:var(--ink-soft);">${MindMesh.escapeHtml(s)}</span>`).join('') : '<span style="background:var(--bg-alt);color:var(--ink-soft);">Campus Node</span>'}</div>
+          <button type="button" class="select-team-btn" data-uid="${m.student.uid}">Add to my team</button>`;
+        const btn = card.querySelector('.select-team-btn');
+        btn.addEventListener('click', async (e) => {
+          btn.disabled = true; btn.textContent = 'Adding…';
+          await addTeammate(m.student);
+          btn.classList.add('added');
+          btn.textContent = 'Added to team';
+          const rect = btn.getBoundingClientRect();
+          if (window.MindMeshToast){
+            window.MindMeshToast.burst(rect.left + rect.width / 2, rect.top);
+            window.MindMeshToast.show(m.student.name.split(' ')[0] + ' added to your team', { type: 'success' });
+          }
+        });
+        matchesEl.appendChild(card);
       });
-      matchesEl.appendChild(card);
-    });
+    }
 
     const opps = MindMesh.computeOpportunities(profile, 4);
     const oppsEl = document.getElementById('res-opps');
@@ -1097,12 +1153,20 @@ import { isCloudReady, getMyUid, saveProfileCloud, loadAllProfilesCloud, addTeam
     state.rollNo = existing.rollNo || '';
     state.email = existing.email || '';
     state.branch = existing.branch || '';
-    state.year = existing.year || '1st year';
-    state.semester = existing.semester || '1st Semester';
+    state.year = existing.year || '';
+    state.semester = existing.semester || '';
+    state.degree = existing.degree || '';
     state.cgpa = existing.cgpa || '';
     state.achievements = existing.achievements || '';
     state.github = existing.github || '';
     state.linkedin = existing.linkedin || '';
+    state.targetRole = existing.targetRole || '';
+    if (existing.photo) {
+      state.photo = existing.photo;
+      photoImg.src = state.photo;
+      photoImg.style.display = 'block';
+      photoPlaceholder.style.display = 'none';
+    }
     if (existing.clubs) state.clubs = new Set(existing.clubs);
     if (existing.tech) state.tech = new Set(existing.tech);
     if (existing.creative) state.creative = new Set(existing.creative);
@@ -1115,11 +1179,13 @@ import { isCloudReady, getMyUid, saveProfileCloud, loadAllProfilesCloud, addTeam
     document.getElementById('f-roll').value = state.rollNo;
     document.getElementById('f-branch').value = state.branch;
     document.getElementById('f-year').value = state.year;
+    document.getElementById('f-degree').value = state.degree;
     document.getElementById('f-semester').value = state.semester;
     document.getElementById('f-cgpa').value = state.cgpa;
     document.getElementById('f-achievements').value = state.achievements;
     document.getElementById('f-github').value = state.github;
     document.getElementById('f-linkedin').value = state.linkedin;
+    document.getElementById('f-target-role').value = state.targetRole;
     if (state.email) {
       document.getElementById('f-email').value = state.email;
       checkEmailDomain(state.email);
@@ -1135,13 +1201,17 @@ import { isCloudReady, getMyUid, saveProfileCloud, loadAllProfilesCloud, addTeam
     document.getElementById('f-achievements').value = '';
     document.getElementById('f-github').value = '';
     document.getElementById('f-linkedin').value = '';
+    document.getElementById('f-year').value = '';
+    document.getElementById('f-degree').value = '';
+    document.getElementById('f-semester').value = '';
+    document.getElementById('f-target-role').value = '';
   }
 
   renderClubChips();
   renderSkillChips();
   renderInterestChips();
   if (state.projects.length === 0) {
-    addProjectRow();
+    checkEmptyProjects();
   } else {
     state.projects.forEach(p => addProjectRow(p));
   }

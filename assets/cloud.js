@@ -91,21 +91,37 @@ export function whenAuthReady() {
   const auth = ensureAuth();
   if (!auth) return Promise.resolve(cachedUser);
   return new Promise((resolve) => {
-    const unsub = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        cachedUser = {
-          uid: user.uid,
-          displayName: user.displayName,
-          email: user.email,
-          photoURL: user.photoURL
-        };
-        try { localStorage.setItem('mindmesh_google_user', JSON.stringify(cachedUser)); } catch (e) {}
-      } else if (!persisted) {
-        cachedUser = null;
-      }
-      unsub();
-      resolve(cachedUser);
-    });
+    let done = false;
+    const finish = (u) => {
+      if (done) return;
+      done = true;
+      resolve(u);
+    };
+    const timer = setTimeout(() => finish(cachedUser), 1800);
+    try {
+      const unsub = onAuthStateChanged(auth, (user) => {
+        clearTimeout(timer);
+        if (user) {
+          cachedUser = {
+            uid: user.uid,
+            displayName: user.displayName,
+            email: user.email,
+            photoURL: user.photoURL
+          };
+          try { localStorage.setItem('mindmesh_google_user', JSON.stringify(cachedUser)); } catch (e) {}
+        } else if (!persisted) {
+          cachedUser = null;
+        }
+        unsub();
+        finish(cachedUser);
+      }, (err) => {
+        clearTimeout(timer);
+        finish(cachedUser);
+      });
+    } catch (e) {
+      clearTimeout(timer);
+      finish(cachedUser);
+    }
   });
 }
 
@@ -232,8 +248,10 @@ export async function loadMyProfileCloud() {
   const uid = getMyUid();
   if (cloudReady) {
     try {
-      const snap = await getDoc(doc(db, PROFILES_COLLECTION, uid));
-      if (snap.exists()) return snap.data();
+      const snapPromise = getDoc(doc(db, PROFILES_COLLECTION, uid));
+      const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 2500));
+      const snap = await Promise.race([snapPromise, timeoutPromise]);
+      if (snap && snap.exists()) return snap.data();
     } catch (err) {
       console.error('MindMesh: cloud load failed, falling back to local copy', err);
     }
@@ -259,11 +277,15 @@ export async function loadAllProfilesCloud() {
   // 2. Try Firestore
   if (cloudReady) {
     try {
-      const snap = await getDocs(collection(db, PROFILES_COLLECTION));
-      snap.docs.forEach(d => {
-        const p = d.data();
-        if (p && p.uid) map[p.uid] = p;
-      });
+      const snapPromise = getDocs(collection(db, PROFILES_COLLECTION));
+      const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 3000));
+      const snap = await Promise.race([snapPromise, timeoutPromise]);
+      if (snap && snap.docs) {
+        snap.docs.forEach(d => {
+          const p = d.data();
+          if (p && p.uid) map[p.uid] = p;
+        });
+      }
     } catch (err) {
       console.error('MindMesh: cloud list failed', err);
     }

@@ -197,14 +197,15 @@
 import { isCloudReady, loadMyProfileCloud, loadAllProfilesCloud, subscribeAllProfiles, addTeammate, whenAuthReady } from './assets/cloud.js';
 
 (async function(){
-  await whenAuthReady();
-  const cloudBanner = document.getElementById('cloud-banner');
-  if (!isCloudReady()){
-    cloudBanner.style.display = 'block';
-    cloudBanner.innerHTML = 'Cloud sync isn\'t set up yet, so you\'re only seeing this device\'s data. See <code>assets/firebase-config.js</code> for a 5-minute setup to see every student\'s profile here.';
-  }
+  try {
+    await whenAuthReady();
+    const cloudBanner = document.getElementById('cloud-banner');
+    if (!isCloudReady()){
+      cloudBanner.style.display = 'block';
+      cloudBanner.innerHTML = 'Cloud sync isn\'t set up yet, so you\'re only seeing this device\'s data. See <code>assets/firebase-config.js</code> for a 5-minute setup to see every student\'s profile here.';
+    }
 
-  let profile = await loadMyProfileCloud();
+    let profile = await loadMyProfileCloud();
   const isDemo = !profile;
   if (!profile) {
     profile = {
@@ -734,17 +735,20 @@ import { isCloudReady, loadMyProfileCloud, loadAllProfilesCloud, subscribeAllPro
         </div>`;
       }).join('');
 
-      matchEl.querySelectorAll('.select-team-btn').forEach((btn, idx) => {
+      matchEl.querySelectorAll('.select-team-btn').forEach((btn) => {
         if (btn.classList.contains('added')) return;
         btn.addEventListener('click', async () => {
+          const uid = btn.dataset.uid;
+          const target = matches.find(m => m.student && m.student.uid === uid);
+          if (!target) return;
           btn.disabled = true; btn.textContent = 'Adding…';
-          await addTeammate(matches[idx].student);
+          await addTeammate(target.student);
           btn.classList.add('added');
           btn.textContent = 'Added to team';
           const rect = btn.getBoundingClientRect();
           if (window.MindMeshToast){
             window.MindMeshToast.burst(rect.left + rect.width / 2, rect.top);
-            window.MindMeshToast.show(matches[idx].student.name.split(' ')[0] + ' added to your team', { type: 'success' });
+            window.MindMeshToast.show(target.student.name.split(' ')[0] + ' added to your team', { type: 'success' });
           }
         });
       });
@@ -760,6 +764,9 @@ import { isCloudReady, loadMyProfileCloud, loadAllProfilesCloud, subscribeAllPro
   // keep this dashboard live: if another student joins while it's open,
   // matches & available teammates refresh automatically
   subscribeAllProfiles(renderMatches);
+  } catch (err) {
+    console.error('MindMesh: Dashboard error', err);
+  }
 })();
 </script>
 </body>

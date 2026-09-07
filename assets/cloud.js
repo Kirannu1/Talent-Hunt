@@ -768,13 +768,28 @@ export async function listMyThreads() {
 export function subscribeMyThreads(callback) {
   myThreadsSubscribers.add(callback);
 
-  // Deliver current threads immediately
-  listMyThreads().then(t => callback(t));
+  let lastThreadsFingerprint = '';
+  function threadFingerprint(list) {
+    if (!list) return '';
+    return list.map(t => (t.id || '') + ':' + (t.updatedAt || 0) + ':' + (t.lastMessage ? t.lastMessage.createdAt : '')).join(';');
+  }
 
-  // Regular poll for thread updates
+  // Deliver current threads immediately
+  listMyThreads().then(t => {
+    lastThreadsFingerprint = threadFingerprint(t);
+    callback(t);
+  });
+
+  // Regular poll for thread updates (only fires if fingerprint changed)
   const pollTimer = setInterval(() => {
-    listMyThreads().then(t => callback(t));
-  }, 1200);
+    listMyThreads().then(t => {
+      const fp = threadFingerprint(t);
+      if (fp !== lastThreadsFingerprint) {
+        lastThreadsFingerprint = fp;
+        callback(t);
+      }
+    });
+  }, 2000);
 
   let unsubCloud = () => {};
   if (cloudReady) {
